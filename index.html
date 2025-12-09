@@ -3,9 +3,9 @@
 <head>
 <meta charset='utf-8'/>
 <meta name='viewport' content='width=device-width,initial-scale=1' />
-<title>Splash - Realtime Monitoring (Firebase)</title>
+<title>Splash - Flow Dashboard (Firebase)</title>
 <style>
-/* Style CSS tetap sama */
+/* ... (Bagian Style CSS tetap sama) ... */
 :root{--bg:#f4fafc;--card:#eaf9ff;--accent:#1e6fb8;--ok:#19a974;--danger:#e03b3b}
 body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;padding:18px}
 .wrap{max-width:1200px;margin:auto}
@@ -25,7 +25,9 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;
 .indicator{padding:8px 12px;border-radius:8px;font-weight:700}
 .indicator.on{background:var(--ok);color:#fff}
 .indicator.off{background:#ddd;color:#333}
-.ctrl{display:none;} /* Tombol kontrol disembunyikan sesuai permintaan */
+.ctrl{display:flex;align-items:center;gap:12px;margin-top:12px}
+.btn{padding:10px 16px;border-radius:999px;border:none;cursor:pointer;font-weight:700}
+.btn.on{background:var(--ok);color:white}.btn.off{background:#ddd;color:#444}
 .chart-card{background:linear-gradient(180deg,#fff,#f7feff);padding:14px;border-radius:12px}
 .download{background:#dff7ea;padding:8px 12px;border-radius:10px;color:#006b2f;font-weight:700;margin-left:8px;cursor:pointer;border:2px solid rgba(0,0,0,0.08)}
 .zoomRow{display:flex;align-items:center;gap:8px;margin-top:6px}
@@ -34,21 +36,23 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;
 </style>
 
 <script src='https://cdn.jsdelivr.net/npm/chart.js'></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 </head>
 <body>
 <div class='wrap'>
   <div class='header'>
-    <img src='https://nasyamutiara06.github.io/SPLASH_Kelompok28/DESPRO.png' alt='SPLASH' style='height:200px;margin-right:12px;'>
+    <img src='./DESPRO.png' alt='SPLASH' style='height:200px;margin-right:12px;'>
   </div>
   <div class='grid'>
     <div class='left'>
       <div class='card'>
         <div style='display:flex;align-items:center;justify-content:space-between'>
-          <h2 style='margin:0'>Water Flow (Realtime Firebase)</h2>
+          <h2 style='margin:0'>Water Flow (Firebase)</h2>
           <div style='font-size:14px;color:#666'>Last update: <span id='lastUpdate'>--:--:--</span></div>
         </div>
 
-        <div class='gauge-row' style='margin-top:12px'>
+                <div class='gauge-row' style='margin-top:12px'>
           <div class='gauge' id='gauge1'>
             <svg viewBox='0 0 220 120'>
               <defs><linearGradient id='g1' x1='0' x2='1'><stop offset='0' stop-color='#8DE2A6'/><stop offset='0.6' stop-color='#F8C46C'/><stop offset='1' stop-color='#F06E6E'/></linearGradient></defs>
@@ -73,8 +77,8 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;
             <div class='percent' style='font-size:14px;color:#555' id='p2ml'>-- mL/s</div>
           </div>
         </div>
-
-        <div class='status' style='margin-top:14px'>
+        
+                <div class='status' style='margin-top:14px'>
           <div id='leakBadge' class='badge ok'>SYSTEM OK</div>
           <div style='display:flex;justify-content:space-between;gap:20px;align-items:center'>
             <div>
@@ -86,6 +90,17 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;
               <div id='valveLabel' class='indicator off' style='margin-top:8px'>-</div>
             </div>
           </div>
+
+          <div class='ctrl' id='valveCtrlContainer'>
+            <div style='font-weight:700; color:#333; margin-right:10px'>Valve Manual Control:</div>
+            <button id='openValveBtn' class='btn on' style='background:#19a974; width:120px'>Open / Reset</button>
+            <button id='closeValveBtn' class='btn off' style='width:120px'>Close</button>
+          </div>
+
+          <div class='ctrl'>
+            <button id='toggleBtn' class='btn off'>Turn Pump ON</button>
+            <div style='font-size:12px;color:#666'>You can click the button or toggle from physical controller</div>
+          </div>
         </div>
       </div>
 
@@ -95,9 +110,9 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;
       </div>
     </div>
 
-    <div class='chart-card'>
+        <div class='chart-card'>
       <div style='display:flex;align-items:center;justify-content:space-between'>
-        <h3 style='margin:0'>Data (Last 100 Samples)</h3>
+        <h3 style='margin:0'>Data</h3>
         <div style='display:flex;align-items:center;gap:6px'>
           <button id='dlCsvPct' class='download'>Download CSV</button>
           <button id='dlPngPct' class='download'>Download PNG</button>
@@ -112,8 +127,10 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;
       </div>
 
       <div class='chart-nav' style='display:flex;align-items:center;justify-content:space-between;margin-top:8px'>
+        <button id='prevBtn' class='btn off' style='padding:6px 10px'>&larr; Prev</button>
         <span id='dataRangeInfo' style='font-size:12px'>Showing data -- of --</span>
-      </div>
+        <button id='nextBtn' class='btn off' style='padding:6px 10px'>Next &rarr;</button>
+        </div>
       <div style='margin-top:8px;font-weight:600;'>Flow (%)</div>
       <canvas id='lineChart' style='width:100%;height:320px;margin-top:4px;'></canvas>
 
@@ -126,287 +143,308 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;
       </div>
       <canvas id='lineChartMlps' style='width:100%;height:320px;margin-top:4px;'></canvas>
 
-      <div style='margin-top:16px;'>
-        <img id='imgOk' src='https://nasyamutiara06.github.io/SPLASH_Kelompok28/OKEY.png' alt='Pipeline OK'
-              style='width:100%;max-height:220px;object-fit:contain;border-radius:12px;
-                     background:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.06);'>
-        <img id='imgLeak' src='https://nasyamutiara06.github.io/SPLASH_Kelompok28/BOCOR.png' alt='Pipeline leak'
-              style='width:100%;max-height:220px;object-fit:contain;border-radius:12px;
-                     background:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.06);display:none;'>
+            <div style='margin-top:16px;'>
+        <img id='imgOk' src='./OKEY.png' alt='Pipeline OK'
+             style='width:100%;max-height:220px;object-fit:contain;border-radius:12px;
+                    background:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.06);'>
+        <img id='imgLeak' src='./BOCOR.png' alt='Pipeline leak'
+             style='width:100%;max-height:220px;object-fit:contain;border-radius:12px;
+                    background:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.06);display:none;'>
       </div>
     </div>
   </div>
 </div>
 
-<script type="module">
-  // Import Firebase SDKs
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-  import { getDatabase, ref, onValue, query, limitToLast } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+<script>
+// 🚨 GANTI DENGAN KONFIGURASI WEB APP FIREBASE ANDA 🚨
+const firebaseConfig = {
+  apiKey: "AIzaSyAlImS2cKAHhuvcpj3Y1ZC1V6LpQMH1DkI", 
+  authDomain: "http://splash-kelompok28.firebaseapp.com/",
+  databaseURL: "https://splash-kelompok28-default-rtdb.asia-southeast1.firebasedatabase.app/",
+  projectId: "splash-kelompok28",
+  storageBucket: "http://splash-kelompok28.firebasestorage.app/",
+  messagingSenderId: "797027515264",
+  appId: "1:797027515264:web:8404eb711cfb5a0d159f65"
+};
 
-  // Your web app's Firebase configuration
-  const firebaseConfig = {
-      apiKey: "AIzaSyAlImS2cKAHhuvcpj3Y1ZC1V6LpQMH1DkI",
-      authDomain: "splash-kelompok28.firebaseapp.com",
-      databaseURL: "https://splash-kelompok28-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "splash-kelompok28",
-      storageBucket: "splash-kelompok28.firebasestorage.app",
-      messagingSenderId: "797027515264",
-      appId: "1:797027515264:web:8404eb711cfb5a0d159f65",
-      measurementId: "G-KSCXTLCMTL"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-
-  let lineChart, lineChartMlps;
-  const MAX_FLOW_LPM = 30.0;
-  const MLPS_MAX = MAX_FLOW_LPM * 1000.0 / 60.0;
-  const pctToMlps = (pct) => (pct / 100.0) * MLPS_MAX;
-  let lastHistoryData = null; 
-
-  const mkLine = () => {
-      const ctx=document.getElementById('lineChart').getContext('2d');
-      lineChart=new Chart(ctx,{
-        type:'line',
-        data:{labels:[],datasets:[
-          {label:'Water Flow 1 (%)',borderColor:'#19a974',pointRadius:4,backgroundColor:'transparent',data:[]},
-          {label:'Water Flow 2 (%)',borderColor:'#e74c3c',pointRadius:4,backgroundColor:'transparent',data:[]}
-        ]},
-        options:{
-          animation:{duration:200},
-          scales:{y:{min:0,max:100}},
-          plugins:{legend:{position:'top'}}
-        }
-      });
-
-      const ctx2=document.getElementById('lineChartMlps').getContext('2d');
-      lineChartMlps=new Chart(ctx2,{
-        type:'line',
-        data:{labels:[],datasets:[
-          {label:'Water Flow 1 (mL/s)',borderColor:'#19a974',pointRadius:4,backgroundColor:'transparent',data:[]},
-          {label:'Water Flow 2 (mL/s)',borderColor:'#e74c3c',pointRadius:4,backgroundColor:'transparent',data:[]}
-        ]},
-        options:{
-          animation:{duration:200},
-          scales:{y:{min:0,max:MLPS_MAX}},
-          plugins:{legend:{position:'top'}}
-        }
-      });
-  };
-
-  const setGauge = (id, v) => {
-      v=Math.max(0,Math.min(100,Math.round(v)));
-      const pct = v/100;
-      const dash = Math.round(565 * pct);
-      const mlps = pctToMlps(v);
-
-      if(id==='g1'){
-        document.getElementById('arc1').setAttribute('stroke-dasharray', dash+' 565');
-        const angle = -90 + (v/100)*180;
-        document.getElementById('needle1').setAttribute('transform','rotate('+angle+' 110 100)');
-        document.getElementById('p1').innerText = v + ' %';
-        document.getElementById('p1ml').innerText = mlps.toFixed(1) + ' mL/s';
-      } else {
-        document.getElementById('arc2').setAttribute('stroke-dasharray', dash+' 565');
-        const angle = -90 + (v/100)*180;
-        document.getElementById('needle2').setAttribute('transform','rotate('+angle+' 110 100)');
-        document.getElementById('p2').innerText = v + ' %';
-        document.getElementById('p2ml').innerText = mlps.toFixed(1) + ' mL/s';
-      }
-  };
-
-  const updateRealtimeUI = (snapshot) => {
-      const j = snapshot.val();
-      if (!j) return;
-
-      // Ambil field dari Firebase: pumpState, valveState, leakLockout (sesuai yang dikirim HTTPClient)
-      const f1 = j.flow1, f2 = j.flow2;
-      setGauge('g1', f1);
-      setGauge('g2', f2);
-
-      const pumpEl = document.getElementById('pumpLabel');
-      pumpEl.innerText = j.pumpState ? 'ON' : 'OFF'; 
-      pumpEl.className = 'indicator ' + (j.pumpState ? 'on' : 'off');
-
-      const valveEl = document.getElementById('valveLabel');
-      valveEl.innerText = j.valveState ? 'OPEN' : 'CLOSED'; 
-
-      const leak = j.leakLockout || false;
-
-      if (leak) {
-          document.getElementById('leakBadge').className = 'badge danger';
-          document.getElementById('leakBadge').innerText = 'WATER LEAKAGE DETECTED! (LOCKED)';
-      } else {
-          document.getElementById('leakBadge').className = 'badge ok';
-          document.getElementById('leakBadge').innerText = 'SYSTEM OK';
-      }
-
-      // Gambar: show/hide
-      const imgOk    = document.getElementById('imgOk');
-      const imgLeak = document.getElementById('imgLeak');
-      if (imgOk && imgLeak) {
-          if (leak) {
-              imgOk.style.display    = 'none';
-              imgLeak.style.display = 'block';
-          } else {
-              imgOk.style.display    = 'block';
-              imgLeak.style.display = 'none';
-          }
-      }
-      
-      const ml1 = pctToMlps(f1).toFixed(1);
-      const ml2 = pctToMlps(f2).toFixed(1);
-      
-      const statusText = `F1=${f1}% (${ml1} mL/s) F2=${f2}% (${ml2} mL/s) Pump:${j.pumpState?'ON':'OFF'} Valve:${j.valveState?'OPEN':'CLOSED'} ${leak ? '(LEAK LOCK)' : ''}`;
-      appendLog(statusText);
-      
-      document.getElementById('lastUpdate').innerText = j.timestamp ? new Date(j.timestamp).toLocaleTimeString() : new Date().toLocaleTimeString();
-  };
-
-  const appendLog = (s) => {
-      const la = document.getElementById('logArea');
-      const now = new Date().toLocaleTimeString();
-      la.innerHTML = '[' + now + '] ' + s + '<br>' + la.innerHTML;
-  };
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const dbRefRealtime = db.ref('realtime');
+const dbRefHistory = db.ref('history');
+const dbRefControl = db.ref('control');
 
 
-  const updateHistoryChart = (snapshot) => {
-      const history = snapshot.val();
-      if (!history) return;
-      lastHistoryData = history; // Simpan data history
+let lineChart, lineChartMlps, lastData=null;
+const MAX_FLOW_LPM = 30.0;
+const MLPS_MAX = MAX_FLOW_LPM * 1000.0 / 60.0;
+const pctToMlps = (pct)=> (pct/100.0) * MLPS_MAX;
+let dataOffset = 0;
+let historyArray = []; 
 
-      const keys = Object.keys(history);
-      keys.sort((a, b) => parseInt(a) - parseInt(b)); // Urutkan berdasarkan timestamp (key)
-
-      const totalSamples = keys.length;
-      const displaySize = parseInt(document.getElementById('zoomRange').value || '30');
-      
-      // Hitung indeks awal untuk tampilan (ambil N data terakhir)
-      const startKeyIndex = Math.max(0, totalSamples - displaySize);
-      
-      const labels = [], d1 = [], d2 = [], m1 = [], m2 = [];
-
-      for (let i = startKeyIndex; i < totalSamples; i++) {
-          const tms = keys[i];
-          const p = history[tms];
-          
-          const f1 = p.f1; // Mengambil f1 dari history data
-          const f2 = p.f2; // Mengambil f2 dari history data
-          
-          labels.push(new Date(parseInt(tms)).toLocaleTimeString());
-          d1.push(f1);
-          d2.push(f2);
-          m1.push(pctToMlps(f1));
-          m2.push(pctToMlps(f2));
-      }
-
-      lineChart.data.labels = labels;
-      lineChart.data.datasets[0].data = d1;
-      lineChart.data.datasets[1].data = d2;
-      lineChart.update();
-
-      lineChartMlps.data.labels = labels;
-      lineChartMlps.data.datasets[0].data = m1;
-      lineChartMlps.data.datasets[1].data = m2;
-      lineChartMlps.update();
-
-      document.getElementById('dataRangeInfo').innerText = 
-          `Showing last ${labels.length} data of ${totalSamples}`;
-  };
-
-  // ================= FIREBASE LISTENERS =================
-
-  // Listener untuk data Realtime (Gauge)
-  const rtRef = ref(db, 'realtime');
-  onValue(rtRef, updateRealtimeUI);
-
-  // Listener untuk data History (Chart), batasi 100 data terakhir
-  const histQuery = query(ref(db, 'history'), limitToLast(100)); 
-  onValue(histQuery, updateHistoryChart);
-
-
-  // ================= UTILS DOWNLOAD =================
-
-  const downloadCsv = (historyData, type) => {
-      if(!historyData) return alert('No data available in history.');
-
-      const keys = Object.keys(historyData);
-      keys.sort((a,b)=>parseInt(a)-parseInt(b));
-
-      let csv = 'timestamp_ms,iso_date,flow1_pct,flow2_pct,pump_state,valve_state,leak_lockout\n';
-      keys.forEach(tms=>{
-        const r = historyData[tms];
-        csv += tms + ','
-          + (new Date(parseInt(tms))).toISOString() + ','
-          + r.f1 + ','
-          + r.f2 + ','
-          + (r.p?'TRUE':'FALSE') + ','
-          + (r.v?'OPEN':'CLOSED') + ','
-          + (r.l?'LOCKED':'FALSE') + '\n';
-      });
-
-      const blob = new Blob([csv], {type:'text/csv'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href = url;
-      a.download = 'splash_firebase_history_'+type+'.csv'; a.click(); URL.revokeObjectURL(url);
-  };
-
-  const downloadPng = (chart) => {
-      if(!chart) return;
-      try{
-        const imgSrc = chart.toBase64Image();
-        const img = new Image();
-        img.onload = ()=>{
-          const W = 1600, H = 900;
-          const cv = document.createElement('canvas');
-          cv.width = W; cv.height = H;
-          const ctx = cv.getContext('2d');
-          ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,W,H);
-          ctx.drawImage(img, 0, 0, W, H);
-          const url = cv.toDataURL('image/png');
-          const a = document.createElement('a'); a.href = url;
-          const type = chart.canvas.id === 'lineChart' ? 'pct' : 'mlps';
-          a.download = 'splash_firebase_chart_'+type+'.png'; a.click();
-        };
-        img.src = imgSrc;
-      }catch(e){ console.error(e); alert('Export failed'); }
-  };
-
-
-  // ================= EVENT LISTENERS =================
-
-  document.getElementById('dlCsvPct').addEventListener('click', ()=>{
-      downloadCsv(lastHistoryData, 'pct');
+// Fungsi mkLine, setGauge, appendLog (Sama)
+const mkLine=()=>{
+  const ctx=document.getElementById('lineChart').getContext('2d');
+  lineChart=new Chart(ctx,{
+    type:'line',
+    data:{labels:[],datasets:[
+      {label:'Water Flow 1 (%)',borderColor:'#19a974',pointRadius:4,backgroundColor:'transparent',data:[]},
+      {label:'Water Flow 2 (%)',borderColor:'#e74c3c',pointRadius:4,backgroundColor:'transparent',data:[]}
+    ]},
+    options:{animation:{duration:200},scales:{y:{min:0,max:100}},plugins:{legend:{position:'top'}}}
   });
-
-  document.getElementById('dlPngPct').addEventListener('click', ()=>{
-      downloadPng(lineChart);
+  const ctx2=document.getElementById('lineChartMlps').getContext('2d');
+  lineChartMlps=new Chart(ctx2,{
+    type:'line',
+    data:{labels:[],datasets:[
+      {label:'Water Flow 1 (mL/s)',borderColor:'#19a974',pointRadius:4,backgroundColor:'transparent',data:[]},
+      {label:'Water Flow 2 (mL/s)',borderColor:'#e74c3c',pointRadius:4,backgroundColor:'transparent',data:[]}
+    ]},
+    options:{animation:{duration:200},scales:{y:{min:0,max:MLPS_MAX}},plugins:{legend:{position:'top'}}}
   });
+};
 
-  document.getElementById('dlCsvMlps').addEventListener('click', ()=>{
-      downloadCsv(lastHistoryData, 'mlps');
-  });
+const setGauge=(id, v)=>{
+  v=Math.max(0,Math.min(100,Math.round(v)));
+  const pct = v/100;
+  const dash = Math.round(565 * pct);
+  const mlps = pctToMlps(v);
 
-  document.getElementById('dlPngMlps').addEventListener('click', ()=>{
-      downloadPng(lineChartMlps);
-  });
+  if(id==='g1'){
+    document.getElementById('arc1').setAttribute('stroke-dasharray', dash+' 565');
+    const angle = -90 + (v/100)*180;
+    document.getElementById('needle1').setAttribute('transform','rotate('+angle+' 110 100)');
+    document.getElementById('p1').innerText = v + ' %';
+    document.getElementById('p1ml').innerText = mlps.toFixed(1) + ' mL/s';
+  } else {
+    document.getElementById('arc2').setAttribute('stroke-dasharray', dash+' 565');
+    const angle = -90 + (v/100)*180;
+    document.getElementById('needle2').setAttribute('transform','rotate('+angle+' 110 100)');
+    document.getElementById('p2').innerText = v + ' %';
+    document.getElementById('p2ml').innerText = mlps.toFixed(1) + ' mL/s';
+  }
+};
+
+const appendLog=(s)=>{
+  const la=document.getElementById('logArea');
+  const now=new Date().toLocaleTimeString();
+  la.innerHTML = '['+now+'] '+s + '<br>' + la.innerHTML;
+};
+
+// Fungsi untuk update UI dari data real-time Firebase
+const updateUI=(j)=>{
+  if (!j) return;
+  lastData=j;
+  const f1=j.flow1, f2=j.flow2;
+  setGauge('g1', f1);
+  setGauge('g2', f2);
+
+  const pumpEl = document.getElementById('pumpLabel');
+  pumpEl.innerText = j.pump? 'ON' : 'OFF';
+  pumpEl.className = 'indicator ' + (j.pump? 'on':'off');
+
+  const valveEl = document.getElementById('valveLabel');
+  valveEl.innerText = j.valve? 'OPEN' : 'CLOSED';
+
+  const leak = j.leakLockout || false;
+
+  if(leak){
+    document.getElementById('leakBadge').className='badge danger';
+    document.getElementById('leakBadge').innerText='WATER LEAKAGE DETECTED! (LOCKED)';
+    valveEl.className = 'indicator off'; 
+  } else {
+    document.getElementById('leakBadge').className='badge ok';
+    document.getElementById('leakBadge').innerText='SYSTEM OK';
+    valveEl.className = 'indicator ' + (j.valve? 'on':'off');
+  }
+
+  // Gambar: show/hide
+  const imgOk   = document.getElementById('imgOk');
+  const imgLeak = document.getElementById('imgLeak');
+  if (imgOk && imgLeak) {
+    if (leak) {
+      imgOk.style.display   = 'none';
+      imgLeak.style.display = 'block';
+    } else {
+      imgOk.style.display   = 'block';
+      imgLeak.style.display = 'none';
+    }
+  }
+
+  const ml1 = pctToMlps(f1).toFixed(1);
+  const ml2 = pctToMlps(f2).toFixed(1);
+  appendLog(
+    'updated: f1='+f1+'% ('+ml1+' mL/s) '+
+    'f2='+f2+'% ('+ml2+' mL/s) '+
+    'pump='+j.pump+' valve='+j.valve + (leak ? ' (LEAK LOCK)' : '')
+  );
+
+  document.getElementById('lastUpdate').innerText = new Date().toLocaleTimeString();
+  const btn=document.getElementById('toggleBtn');
+  btn.className = 'btn ' + (j.pump? 'on':'off');
+  btn.innerText = j.pump? 'Turn Pump OFF' : 'Turn Pump ON';
+};
 
 
-  const zoomRange = document.getElementById('zoomRange');
-  zoomRange.addEventListener('input', () => {
-      document.getElementById('zoomVal').innerText = zoomRange.value;
-      if(lastHistoryData) updateHistoryChart({ val: () => lastHistoryData });
-  });
+// Fungsi untuk update chart dari data historyArray
+const updateChartSeries=()=>{
+  if(!lineChart || !lineChartMlps || historyArray.length === 0) return;
+
+  let arr = historyArray.slice(); 
   
-  // ================= INIT =================
+  const totalSamples = arr.length;
+  const displaySize = parseInt(document.getElementById('zoomRange').value || '30');
 
-  window.addEventListener('load', () => {
-      mkLine();
-      // Tidak perlu fetchData atau setInterval, karena onValue Firebase bersifat realtime
+  if(dataOffset < 0) dataOffset = 0;
+  if(dataOffset > totalSamples - displaySize) {
+    dataOffset = Math.max(0, totalSamples - displaySize);
+  }
+  
+  // Logika Navigasi
+  document.getElementById('nextBtn').disabled = dataOffset === 0;
+  document.getElementById('prevBtn').disabled = (totalSamples <= displaySize) || (dataOffset >= totalSamples - displaySize);
+
+  const endIndex = totalSamples - dataOffset;
+  const startIndex = totalSamples - displaySize - dataOffset;
+  const displayArr = arr.slice(Math.max(0, startIndex), endIndex);
+
+  const startIdxDisp = Math.max(0, startIndex) + 1;
+  const endIdxDisp = endIndex > totalSamples ? totalSamples : endIndex;
+  document.getElementById('dataRangeInfo').innerText = 
+    `Showing data ${startIdxDisp} to ${endIdxDisp} of ${totalSamples}`;
+  
+  let labels=[], d1=[], d2=[], m1=[], m2=[];
+  
+  displayArr.forEach(p=>{
+    labels.push(new Date(p.tms).toLocaleTimeString());
+    d1.push(p.f1);
+    d2.push(p.f2);
+    m1.push(pctToMlps(p.f1));
+    m2.push(pctToMlps(p.f2));
   });
-</script>
 
+  lineChart.data.labels = labels;
+  lineChart.data.datasets[0].data = d1;
+  lineChart.data.datasets[1].data = d2;
+  lineChart.update();
+
+  lineChartMlps.data.labels = labels;
+  lineChartMlps.data.datasets[0].data = m1;
+  lineChartMlps.data.datasets[1].data = m2;
+  lineChartMlps.update();
+};
+
+// LISTENERS FIREBASE
+dbRefRealtime.on('value', (snapshot) => {
+  const data = snapshot.val();
+  updateUI(data);
+}, (error) => {
+  console.error("Error reading realtime data:", error);
+  appendLog("Error reading realtime data from Firebase!");
+});
+
+dbRefHistory.orderByChild('tms').limitToLast(100).on('value', (snapshot) => {
+  // Mengambil 100 data terakhir dari history
+  historyArray = [];
+  snapshot.forEach((childSnapshot) => {
+    historyArray.push(childSnapshot.val());
+  });
+  historyArray.sort((a, b) => a.tms - b.tms); 
+  updateChartSeries();
+}, (error) => {
+  console.error("Error reading history data:", error);
+});
+
+
+// EVENT LISTENERS DOM (Kontrol melalui Firebase Write)
+document.addEventListener('click', async (ev)=>{
+  if(ev.target && ev.target.id==='toggleBtn'){
+    const currentPumpState = lastData ? lastData.pump : false;
+    await dbRefControl.child('pumpToggle').set(!currentPumpState);
+  }
+  if(ev.target && ev.target.id==='openValveBtn'){
+    if(confirm("MEMBUKA KATUP MANUAL: Ini akan mereset status Lockout Kebocoran dan menjalankan Startup Delay (7s). Lanjutkan?")){
+      await dbRefControl.child('valveControl').set('open');
+    }
+  }
+  if(ev.target && ev.target.id==='closeValveBtn'){
+    if(confirm("MENUTUP KATUP MANUAL: Ini akan mengaktifkan Leak Lockout. Lanjutkan?")){
+      await dbRefControl.child('valveControl').set('close');
+    }
+  }
+});
+
+// FUNCTIONS Chart Control & Download (Sama)
+const zoomRange = document.getElementById('zoomRange');
+const zoomVal = document.getElementById('zoomVal');
+
+document.getElementById('dlCsvPct').addEventListener('click', ()=>{ downloadCsv('pct'); });
+document.getElementById('dlPngPct').addEventListener('click', ()=>{ downloadPng(lineChart); });
+document.getElementById('dlCsvMlps').addEventListener('click', ()=>{ downloadCsv('mlps'); });
+document.getElementById('dlPngMlps').addEventListener('click', ()=>{ downloadPng(lineChartMlps); });
+
+const downloadCsv = (type) => {
+  if(historyArray.length === 0) return alert('No data');
+  
+  let csv = 'tms,iso,flow1_pct,flow2_pct,flow1_mlps,flow2_mlps\n';
+  historyArray.forEach(r=>{
+    const ml1 = pctToMlps(r.f1);
+    const ml2 = pctToMlps(r.f2);
+    csv += r.tms + ','
+        + (new Date(r.tms)).toISOString() + ','
+        + r.f1 + ','
+        + r.f2 + ','
+        + ml1.toFixed(3) + ','
+        + ml2.toFixed(3) + '\n';
+  });
+
+  const blob = new Blob([csv], {type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url;
+  a.download = 'splash_data_per_sample_'+type+'.csv'; a.click(); URL.revokeObjectURL(url);
+};
+
+const downloadPng = (chart) => {
+  if(!chart) return;
+  try{
+    const imgSrc = chart.toBase64Image();
+    const img = new Image();
+    img.onload = ()=>{
+      const W = 1600, H = 900;
+      const cv = document.createElement('canvas');
+      cv.width = W; cv.height = H;
+      const ctx = cv.getContext('2d');
+      ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,W,H);
+      ctx.drawImage(img, 0, 0, W, H);
+      const url = cv.toDataURL('image/png');
+      const a = document.createElement('a'); a.href = url;
+      const type = chart.canvas.id === 'lineChart' ? 'pct' : 'mlps';
+      a.download = 'splash_chart_'+type+'.png'; a.click();
+    };
+    img.src = imgSrc;
+  }catch(e){ console.error(e); alert('Export failed'); }
+};
+
+document.getElementById('prevBtn').addEventListener('click', ()=>{
+  const step = parseInt(document.getElementById('zoomRange').value || '30');
+  dataOffset += step;
+  updateChartSeries();
+});
+
+document.getElementById('nextBtn').addEventListener('click', ()=>{
+  const step = parseInt(document.getElementById('zoomRange').value || '30');
+  dataOffset -= step;
+  updateChartSeries();
+});
+
+zoomRange.addEventListener('input', ()=>{
+  zoomVal.innerText = zoomRange.value;
+  dataOffset = 0;
+  updateChartSeries();
+});
+
+window.addEventListener('load', ()=>{
+  mkLine();
+});
+</script>
 </body>
 </html>
-
