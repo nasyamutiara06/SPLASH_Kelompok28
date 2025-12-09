@@ -284,13 +284,17 @@ const appendLog = (s) => {
 
 async function sendPumpToggle() {
   try{
-    const body = JSON.stringify({action:"toggle", ts:Date.now()});
+    let action = "toggle";
+    if (lastData && typeof lastData.pump === 'boolean') {
+      action = lastData.pump ? "off" : "on";
+    }
+    const body = JSON.stringify({action, ts:Date.now()});
     await fetch(FB_BASE + '/cmdPump.json', {
       method:'PUT',
       headers:{'Content-Type':'application/json'},
       body
     });
-    appendLog('Web: request PUMP TOGGLE sent');
+    appendLog('Web: request PUMP ' + action.toUpperCase() + ' sent');
   }catch(e){
     console.log(e);
     alert('Gagal kirim perintah pump');
@@ -351,7 +355,6 @@ const fetchData = async () => {
   }
 };
 
-// klik tombol kontrol
 document.addEventListener('click', (ev)=>{
   if(!ev.target) return;
   if(ev.target.id === 'toggleBtn'){
@@ -515,7 +518,7 @@ zoomRange.addEventListener('input', ()=>{
 window.addEventListener('load', ()=>{
   mkLine();
   fetchData();
-  setInterval(fetchData, 1000);   // 1 detik polling Firebase
+  setInterval(fetchData, 800);   // polling sedikit lebih cepat
 });
 </script>
 
