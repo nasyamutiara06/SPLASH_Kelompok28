@@ -146,7 +146,7 @@ const MLPS_MAX = MAX_FLOW_LPM * 1000.0 / 60.0;
 const pctToMlps = (pct) => (pct / 100.0) * MLPS_MAX;
 let lastHistoryData = null; 
 
-// Fungsi untuk memaksa waktu menjadi zona Asia/Jakarta (WIB)
+// === FUNGSI BARU UNTUK MEMAKSA TAMPILAN WAKTU KE WIB ===
 const formatTimeWIB = (timestamp_ms) => {
     if (!timestamp_ms) return '--:--:--';
     const date = new Date(timestamp_ms);
@@ -154,8 +154,8 @@ const formatTimeWIB = (timestamp_ms) => {
         hour: '2-digit',
         minute: '2-digit',
         second: '2-digit',
-        hour12: false, // Menggunakan format 24 jam
-        timeZone: 'Asia/Jakarta' 
+        hour12: false, 
+        timeZone: 'Asia/Jakarta' // WIB (GMT+7)
     };
     try {
         return date.toLocaleTimeString('id-ID', options);
@@ -164,6 +164,8 @@ const formatTimeWIB = (timestamp_ms) => {
         return date.toLocaleTimeString(); 
     }
 };
+// =======================================================
+
 
 // Fungsi Helper (Didefinisikan di luar scope module untuk menghindari masalah import jika digabung)
 const mkLine = () => {
@@ -292,9 +294,9 @@ const appendLog = (s) => {
       const ml2 = pctToMlps(f2).toFixed(1);
       
       const statusText = `F1=${f1}% (${ml1} mL/s) F2=${f2}% (${ml2} mL/s) Pump:${j.pumpState?'ON':'OFF'} Valve:${j.valveState?'OPEN':'CLOSED'} ${leak ? '(LEAK LOCK)' : ''}`;
-      // Logika log dihapus di sini karena sudah ada di appendLog non-module
-
+      
       // *** PERBAIKAN WAKTU: Last Update ***
+      // Menggunakan timestamp dari data realtime ESP32 dan mengonversi ke WIB
       if (j.timestamp) {
           document.getElementById('lastUpdate').innerText = formatTimeWIB(j.timestamp);
       }
