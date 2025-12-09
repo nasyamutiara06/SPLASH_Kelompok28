@@ -5,7 +5,7 @@
 <meta name='viewport' content='width=device-width,initial-scale=1' />
 <title>Splash - Flow Dashboard (Firebase)</title>
 <style>
-/* ... (Bagian Style CSS tetap sama) ... */
+/* STYLE CSS TETAP SAMA */
 :root{--bg:#f4fafc;--card:#eaf9ff;--accent:#1e6fb8;--ok:#19a974;--danger:#e03b3b}
 body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;padding:18px}
 .wrap{max-width:1200px;margin:auto}
@@ -35,124 +35,124 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;
 @media(max-width:900px){.grid{grid-template-columns:1fr;}.gauge{width:100%}}
 </style>
 
-<script src='https://cdn.jsdelivr.net/npm/chart.js'></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 </head>
 <body>
 <div class='wrap'>
-  <div class='header'>
-    <img src='./DESPRO.png' alt='SPLASH' style='height:200px;margin-right:12px;'>
-  </div>
-  <div class='grid'>
-    <div class='left'>
-      <div class='card'>
-        <div style='display:flex;align-items:center;justify-content:space-between'>
-          <h2 style='margin:0'>Water Flow (Firebase)</h2>
-          <div style='font-size:14px;color:#666'>Last update: <span id='lastUpdate'>--:--:--</span></div>
-        </div>
+  <div class='header'>
+    <img src='./DESPRO.png' alt='SPLASH' style='height:200px;margin-right:12px;'>
+  </div>
+  <div class='grid'>
+    <div class='left'>
+      <div class='card'>
+        <div style='display:flex;align-items:center;justify-content:space-between'>
+          <h2 style='margin:0'>Water Flow (Firebase)</h2>
+          <div style='font-size:14px;color:#666'>Last update: <span id='lastUpdate'>--:--:--</span></div>
+        </div>
 
-                <div class='gauge-row' style='margin-top:12px'>
-          <div class='gauge' id='gauge1'>
-            <svg viewBox='0 0 220 120'>
-              <defs><linearGradient id='g1' x1='0' x2='1'><stop offset='0' stop-color='#8DE2A6'/><stop offset='0.6' stop-color='#F8C46C'/><stop offset='1' stop-color='#F06E6E'/></linearGradient></defs>
-              <path d='M20 100 A90 90 0 0 1 200 100' fill='none' stroke='#ddd' stroke-width='18' stroke-linecap='round'></path>
-              <path id='arc1' d='M20 100 A90 90 0 0 1 200 100' fill='none' stroke='url(#g1)' stroke-width='18' stroke-linecap='round' stroke-dasharray='0 565' stroke-linejoin='round'></path>
-              <line id='needle1' x1='110' y1='100' x2='110' y2='30' stroke='#58386a' stroke-width='6' stroke-linecap='round' transform='rotate(-90 110 100)'></line>
-              <circle cx='110' cy='100' r='8' fill='#58386a'></circle>
-            </svg>
-            <div class='percent' id='p1'>-- %</div>
-            <div class='percent' style='font-size:14px;color:#555' id='p1ml'>-- mL/s</div>
-          </div>
+                <div class='gauge-row' style='margin-top:12px'>
+          <div class='gauge' id='gauge1'>
+            <svg viewBox='0 0 220 120'>
+              <defs><linearGradient id='g1' x1='0' x2='1'><stop offset='0' stop-color='#8DE2A6'/><stop offset='0.6' stop-color='#F8C46C'/><stop offset='1' stop-color='#F06E6E'/></linearGradient></defs>
+              <path d='M20 100 A90 90 0 0 1 200 100' fill='none' stroke='#ddd' stroke-width='18' stroke-linecap='round'></path>
+              <path id='arc1' d='M20 100 A90 90 0 0 1 200 100' fill='none' stroke='url(#g1)' stroke-width='18' stroke-linecap='round' stroke-dasharray='0 565' stroke-linejoin='round'></path>
+              <line id='needle1' x1='110' y1='100' x2='110' y2='30' stroke='#58386a' stroke-width='6' stroke-linecap='round' transform='rotate(-90 110 100)'></line>
+              <circle cx='110' cy='100' r='8' fill='#58386a'></circle>
+            </svg>
+            <div class='percent' id='p1'>-- %</div>
+            <div class='percent' style='font-size:14px;color:#555' id='p1ml'>-- mL/s</div>
+          </div>
 
-          <div class='gauge' id='gauge2'>
-            <svg viewBox='0 0 220 120'>
-              <defs><linearGradient id='g2' x1='0' x2='1'><stop offset='0' stop-color='#8DE2A6'/><stop offset='0.6' stop-color='#F8C46C'/><stop offset='1' stop-color='#F06E6E'/></linearGradient></defs>
-              <path d='M20 100 A90 90 0 0 1 200 100' fill='none' stroke='#ddd' stroke-width='18' stroke-linecap='round'></path>
-              <path id='arc2' d='M20 100 A90 90 0 0 1 200 100' fill='none' stroke='url(#g2)' stroke-width='18' stroke-linecap='round' stroke-dasharray='0 565'></path>
-              <line id='needle2' x1='110' y1='100' x2='110' y2='30' stroke='#58386a' stroke-width='6' stroke-linecap='round' transform='rotate(-90 110 100)'></line>
-              <circle cx='110' cy='100' r='8' fill='#58386a'></circle>
-            </svg>
-            <div class='percent' id='p2'>-- %</div>
-            <div class='percent' style='font-size:14px;color:#555' id='p2ml'>-- mL/s</div>
-          </div>
-        </div>
+          <div class='gauge' id='gauge2'>
+            <svg viewBox='0 0 220 120'>
+              <defs><linearGradient id='g2' x1='0' x2='1'><stop offset='0' stop-color='#8DE2A6'/><stop offset='0.6' stop-color='#F8C46C'/><stop offset='1' stop-color='#F06E6E'/></linearGradient></defs>
+              <path d='M20 100 A90 90 0 0 1 200 100' fill='none' stroke='#ddd' stroke-width='18' stroke-linecap='round'></path>
+              <path id='arc2' d='M20 100 A90 90 0 0 1 200 100' fill='none' stroke='url(#g2)' stroke-width='18' stroke-linecap='round' stroke-dasharray='0 565'></path>
+              <line id='needle2' x1='110' y1='100' x2='110' y2='30' stroke='#58386a' stroke-width='6' stroke-linecap='round' transform='rotate(-90 110 100)'></line>
+              <circle cx='110' cy='100' r='8' fill='#58386a'></circle>
+            </svg>
+            <div class='percent' id='p2'>-- %</div>
+            <div class='percent' style='font-size:14px;color:#555' id='p2ml'>-- mL/s</div>
+          </div>
+        </div>
         
-                <div class='status' style='margin-top:14px'>
-          <div id='leakBadge' class='badge ok'>SYSTEM OK</div>
-          <div style='display:flex;justify-content:space-between;gap:20px;align-items:center'>
-            <div>
-              <div style='margin-bottom:8px;font-weight:700'>Water Pump</div>
-              <div style='margin-bottom:8px;font-weight:700'>Solenoid Valve</div>
-            </div>
-            <div style='text-align:right'>
-              <div id='pumpLabel' class='indicator off'>-</div>
-              <div id='valveLabel' class='indicator off' style='margin-top:8px'>-</div>
-            </div>
-          </div>
+                <div class='status' style='margin-top:14px'>
+          <div id='leakBadge' class='badge ok'>SYSTEM OK</div>
+          <div style='display:flex;justify-content:space-between;gap:20px;align-items:center'>
+            <div>
+              <div style='margin-bottom:8px;font-weight:700'>Water Pump</div>
+              <div style='margin-bottom:8px;font-weight:700'>Solenoid Valve</div>
+            </div>
+            <div style='text-align:right'>
+              <div id='pumpLabel' class='indicator off'>-</div>
+              <div id='valveLabel' class='indicator off' style='margin-top:8px'>-</div>
+            </div>
+          </div>
 
-          <div class='ctrl' id='valveCtrlContainer'>
-            <div style='font-weight:700; color:#333; margin-right:10px'>Valve Manual Control:</div>
-            <button id='openValveBtn' class='btn on' style='background:#19a974; width:120px'>Open / Reset</button>
-            <button id='closeValveBtn' class='btn off' style='width:120px'>Close</button>
-            </div>
+          <div class='ctrl' id='valveCtrlContainer'>
+            <div style='font-weight:700; color:#333; margin-right:10px'>Valve Manual Control:</div>
+            <button id='openValveBtn' class='btn on' style='background:#19a974; width:120px'>Open / Reset</button>
+            <button id='closeValveBtn' class='btn off' style='width:120px'>Close</button>
+          </div>
 
-          <div class='ctrl'>
-            <button id='toggleBtn' class='btn off'>Turn Pump ON</button>
-            <div style='font-size:12px;color:#666'>You can click the button or toggle from physical controller</div>
-          </div>
-        </div>
-      </div>
+          <div class='ctrl'>
+            <button id='toggleBtn' class='btn off'>Turn Pump ON</button>
+            <div style='font-size:12px;color:#666'>You can click the button or toggle from physical controller</div>
+          </div>
+        </div>
+      </div>
 
-      <div class='card'>
-        <h3 style='margin:0 0 8px 0'>Status & Logs</h3>
-        <div id='logArea' class='logs'></div>
-      </div>
-    </div>
+      <div class='card'>
+        <h3 style='margin:0 0 8px 0'>Status & Logs</h3>
+        <div id='logArea' class='logs'></div>
+      </div>
+    </div>
 
-        <div class='chart-card'>
-      <div style='display:flex;align-items:center;justify-content:space-between'>
-        <h3 style='margin:0'>Data</h3>
-        <div style='display:flex;align-items:center;gap:6px'>
-          <button id='dlCsvPct' class='download'>Download CSV</button>
-          <button id='dlPngPct' class='download'>Download PNG</button>
-        </div>
-      </div>
+        <div class='chart-card'>
+      <div style='display:flex;align-items:center;justify-content:space-between'>
+        <h3 style='margin:0'>Data</h3>
+        <div style='display:flex;align-items:center;gap:6px'>
+          <button id='dlCsvPct' class='download'>Download CSV</button>
+          <button id='dlPngPct' class='download'>Download PNG</button>
+        </div>
+      </div>
 
-      <div class='zoomRow'>
-        <label for='zoomRange'>Show last</label>
-        <input id='zoomRange' type='range' min='5' max='100' value='30' step='1' />
-        <span id='zoomVal'>30</span>data
-        <div style='font-size:12px;color:#666;margin-left:10px'>(Data Per Sampel)</div>
-      </div>
+      <div class='zoomRow'>
+        <label for='zoomRange'>Show last</label>
+        <input id='zoomRange' type='range' min='5' max='100' value='30' step='1' />
+        <span id='zoomVal'>30</span>data
+        <div style='font-size:12px;color:#666;margin-left:10px'>(Data Per Sampel)</div>
+      </div>
 
-      <div class='chart-nav' style='display:flex;align-items:center;justify-content:space-between;margin-top:8px'>
-        <button id='prevBtn' class='btn off' style='padding:6px 10px'>&larr; Prev</button>
-        <span id='dataRangeInfo' style='font-size:12px'>Showing data -- of --</span>
-        <button id='nextBtn' class='btn off' style='padding:6px 10px'>Next &rarr;</button>
-        </div>
-      <div style='margin-top:8px;font-weight:600;'>Flow (%)</div>
-      <canvas id='lineChart' style='width:100%;height:320px;margin-top:4px;'></canvas>
+      <div class='chart-nav' style='display:flex;align-items:center;justify-content:space-between;margin-top:8px'>
+        <button id='prevBtn' class='btn off' style='padding:6px 10px'>&larr; Prev</button>
+        <span id='dataRangeInfo' style='font-size:12px'>Showing data -- of --</span>
+        <button id='nextBtn' class='btn off' style='padding:6px 10px'>Next &rarr;</button>
+        </div>
+      <div style='margin-top:8px;font-weight:600;'>Flow (%)</div>
+      <canvas id='lineChart' style='width:100%;height:320px;margin-top:4px;'></canvas>
 
-      <div style='margin-top:12px;font-weight:600;display:flex;justify-content:space-between;align-items:center;'>
-        Flow (mL/s)
-        <div>
-          <button id='dlCsvMlps' class='download' style='font-size:12px;padding:6px 10px;'>Download CSV</button>
-          <button id='dlPngMlps' class='download' style='font-size:12px;padding:6px 10px;'>Download PNG</button>
-        </div>
-      </div>
-      <canvas id='lineChartMlps' style='width:100%;height:320px;margin-top:4px;'></canvas>
+      <div style='margin-top:12px;font-weight:600;display:flex;justify-content:space-between;align-items:center;'>
+        Flow (mL/s)
+        <div>
+          <button id='dlCsvMlps' class='download' style='font-size:12px;padding:6px 10px;'>Download CSV</button>
+          <button id='dlPngMlps' class='download' style='font-size:12px;padding:6px 10px;'>Download PNG</button>
+        </div>
+      </div>
+      <canvas id='lineChartMlps' style='width:100%;height:320px;margin-top:4px;'></canvas>
 
-            <div style='margin-top:16px;'>
-        <img id='imgOk' src='./OKEY.png' alt='Pipeline OK'
-             style='width:100%;max-height:220px;object-fit:contain;border-radius:12px;
-                    background:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.06);'>
-        <img id='imgLeak' src='./BOCOR.png' alt='Pipeline leak'
-             style='width:100%;max-height:220px;object-fit:contain;border-radius:12px;
-                    background:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.06);display:none;'>
-      </div>
-    </div>
-  </div>
+            <div style='margin-top:16px;'>
+        <img id='imgOk' src='./OKEY.png' alt='Pipeline OK'
+             style='width:100%;max-height:220px;object-fit:contain;border-radius:12px;
+                    background:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.06);'>
+        <img id='imgLeak' src='./BOCOR.png' alt='Pipeline leak'
+             style='width:100%;max-height:220px;object-fit:contain;border-radius:12px;
+                    background:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.06);display:none;'>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -173,7 +173,6 @@ const dbRefRealtime = db.ref('realtime');
 const dbRefHistory = db.ref('history');
 const dbRefControl = db.ref('control');
 
-
 let lineChart, lineChartMlps, lastData=null;
 const MAX_FLOW_LPM = 30.0;
 const MLPS_MAX = MAX_FLOW_LPM * 1000.0 / 60.0;
@@ -181,197 +180,267 @@ const pctToMlps = (pct)=> (pct/100.0) * MLPS_MAX;
 let dataOffset = 0;
 let historyArray = []; 
 
-// Fungsi mkLine, setGauge, appendLog (Sama)
-const mkLine=()=>{
-  const ctx=document.getElementById('lineChart').getContext('2d');
-  lineChart=new Chart(ctx,{
-    type:'line',
-    data:{labels:[],datasets:[
-      // >>> PERUBAHAN DI SINI: pointRadius: 0 dan spanGaps: true
-      {label:'Water Flow 1 (%)',borderColor:'#19a974',pointRadius:0,backgroundColor:'transparent',data:[], spanGaps: true},
-      {label:'Water Flow 2 (%)',borderColor:'#e74c3c',pointRadius:0,backgroundColor:'transparent',data:[], spanGaps: true}
-    ]},
-    options:{
-      animation:{duration:200},
-      scales:{y:{min:0,max:100}},
-      plugins:{legend:{position:'top'}}
-    }
-  });
-  const ctx2=document.getElementById('lineChartMlps').getContext('2d');
-  lineChartMlps=new Chart(ctx2,{
-    type:'line',
-    data:{labels:[],datasets:[
-      // >>> PERUBAHAN DI SINI: pointRadius: 0 dan spanGaps: true
-      {label:'Water Flow 1 (mL/s)',borderColor:'#19a974',pointRadius:0,backgroundColor:'transparent',data:[], spanGaps: true},
-      {label:'Water Flow 2 (mL/s)',borderColor:'#e74c3c',pointRadius:0,backgroundColor:'transparent',data:[], spanGaps: true}
-    ]},
-    options:{
-      animation:{duration:200},
-      scales:{y:{min:0,max:MLPS_MAX}},
-      plugins:{legend:{position:'top'}}
-    }
-  });
+// --- FUNGSI FORMAT WAKTU BARU (Mengatasi data lama yang jam 7 pagi) ---
+const formatTime = (timestamp) => {
+    // Cek jika timestamp terlalu kecil (data sebelum sinkronisasi NTP)
+    // Angka ini kira-kira tahun 2020 dalam milidetik
+    if (!timestamp || timestamp < 1600000000000) { 
+        return 'N/A'; // Tandai data lama
+    }
+    const date = new Date(timestamp);
+    // Format HH:mm:ss
+    return date.toLocaleTimeString([], { hour12: false }); 
 };
 
-// ... (Fungsi setGauge, appendLog, updateUI, updateChartSeries tetap sama) ...
-const setGauge=(id, v)=>{
-  v=Math.max(0,Math.min(100,Math.round(v)));
-  const pct = v/100;
-  const dash = Math.round(565 * pct);
-  const mlps = pctToMlps(v);
+// ----- PERBAIKAN GRAFIK: Konfigurasi Chart.js agar BERGARIS -----
+const mkLine=()=>{
+  // --- Konfigurasi Grafik Persentase ---
+  const ctx=document.getElementById('lineChart').getContext('2d');
+  lineChart=new Chart(ctx,{
+    type:'line',
+    data:{
+        labels:[],
+        datasets:[
+          {
+            label:'Water Flow 1 (%)',
+            borderColor:'#19a974',
+            backgroundColor: 'rgba(25, 169, 116, 0.1)', // Warna isi transparan
+            pointRadius: 3,         // Ukuran titik
+            borderWidth: 2,         // Ketebalan garis (INI YANG MEMBUAT GARIS MUNCUL)
+            tension: 0.3,           // Kelengkungan garis
+            fill: true,             // Isi area di bawah garis
+            data:[]
+          },
+          {
+            label:'Water Flow 2 (%)',
+            borderColor:'#e74c3c',
+            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+            pointRadius: 3,
+            borderWidth: 2,
+            tension: 0.3,
+            fill: true,
+            data:[]
+          }
+        ]
+    },
+    options:{
+        responsive: true,
+        maintainAspectRatio: false,
+        animation:{duration:0}, // Matikan animasi agar responsif
+        scales:{
+            y:{min:0,max:100, title: {display: true, text: 'Persentase (%)'}},
+            x:{title: {display: true, text: 'Waktu'}}
+        },
+        plugins:{legend:{position:'top'}}
+    }
+  });
 
-  if(id==='g1'){
-    document.getElementById('arc1').setAttribute('stroke-dasharray', dash+' 565');
-    const angle = -90 + (v/100)*180;
-    document.getElementById('needle1').setAttribute('transform','rotate('+angle+' 110 100)');
-    document.getElementById('p1').innerText = v + ' %';
-    document.getElementById('p1ml').innerText = mlps.toFixed(1) + ' mL/s';
-  } else {
-    document.getElementById('arc2').setAttribute('stroke-dasharray', dash+' 565');
-    const angle = -90 + (v/100)*180;
-    document.getElementById('needle2').setAttribute('transform','rotate('+angle+' 110 100)');
-    document.getElementById('p2').innerText = v + ' %';
-    document.getElementById('p2ml').innerText = mlps.toFixed(1) + ' mL/s';
-  }
+  // --- Konfigurasi Grafik mL/s ---
+  const ctx2=document.getElementById('lineChartMlps').getContext('2d');
+  lineChartMlps=new Chart(ctx2,{
+    type:'line',
+    data:{
+        labels:[],
+        datasets:[
+          {
+            label:'Water Flow 1 (mL/s)',
+            borderColor:'#19a974',
+            backgroundColor: 'rgba(25, 169, 116, 0.1)',
+            pointRadius: 3,
+            borderWidth: 2,
+            tension: 0.3,
+            fill: true,
+            data:[]
+          },
+          {
+            label:'Water Flow 2 (mL/s)',
+            borderColor:'#e74c3c',
+            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+            pointRadius: 3,
+            borderWidth: 2,
+            tension: 0.3,
+            fill: true,
+            data:[]
+          }
+        ]
+    },
+    options:{
+        responsive: true,
+        maintainAspectRatio: false,
+        animation:{duration:0},
+        scales:{
+            y:{min:0,max:MLPS_MAX, title: {display: true, text: 'Debit (mL/s)'}},
+            x:{title: {display: true, text: 'Waktu'}}
+        },
+        plugins:{legend:{position:'top'}}
+    }
+  });
+};
+
+// ... (Fungsi setGauge, appendLog, updateUI TETAP SAMA) ...
+const setGauge=(id, v)=>{
+  v=Math.max(0,Math.min(100,Math.round(v)));
+  const pct = v/100;
+  const dash = Math.round(565 * pct);
+  const mlps = pctToMlps(v);
+
+  if(id==='g1'){
+    document.getElementById('arc1').setAttribute('stroke-dasharray', dash+' 565');
+    const angle = -90 + (v/100)*180;
+    document.getElementById('needle1').setAttribute('transform','rotate('+angle+' 110 100)');
+    document.getElementById('p1').innerText = v + ' %';
+    document.getElementById('p1ml').innerText = mlps.toFixed(1) + ' mL/s';
+  } else {
+    document.getElementById('arc2').setAttribute('stroke-dasharray', dash+' 565');
+    const angle = -90 + (v/100)*180;
+    document.getElementById('needle2').setAttribute('transform','rotate('+angle+' 110 100)');
+    document.getElementById('p2').innerText = v + ' %';
+    document.getElementById('p2ml').innerText = mlps.toFixed(1) + ' mL/s';
+  }
 };
 
 const appendLog=(s)=>{
-  const la=document.getElementById('logArea');
-  const now=new Date().toLocaleTimeString();
-  la.innerHTML = '['+now+'] '+s + '<br>' + la.innerHTML;
+  const la=document.getElementById('logArea');
+  const now=new Date().toLocaleTimeString();
+  la.innerHTML = '['+now+'] '+s + '<br>' + la.innerHTML;
 };
 
 const updateUI=(j)=>{
-  if (!j) return;
-  lastData=j;
-  const f1=j.flow1, f2=j.flow2;
-  setGauge('g1', f1);
-  setGauge('g2', f2);
+  if (!j) return;
+  lastData=j;
+  const f1=j.flow1, f2=j.flow2;
+  setGauge('g1', f1);
+  setGauge('g2', f2);
 
-  const pumpEl = document.getElementById('pumpLabel');
-  pumpEl.innerText = j.pump? 'ON' : 'OFF';
-  pumpEl.className = 'indicator ' + (j.pump? 'on':'off');
+  const pumpEl = document.getElementById('pumpLabel');
+  pumpEl.innerText = j.pump? 'ON' : 'OFF';
+  pumpEl.className = 'indicator ' + (j.pump? 'on':'off');
 
-  const valveEl = document.getElementById('valveLabel');
-  valveEl.innerText = j.valve? 'OPEN' : 'CLOSED';
+  const valveEl = document.getElementById('valveLabel');
+  valveEl.innerText = j.valve? 'OPEN' : 'CLOSED';
 
-  const leak = j.leakLockout || false;
+  const leak = j.leakLockout || false;
 
-  if(leak){
-    document.getElementById('leakBadge').className='badge danger';
-    document.getElementById('leakBadge').innerText='WATER LEAKAGE DETECTED! (LOCKED)';
-    valveEl.className = 'indicator off'; 
-  } else {
-    document.getElementById('leakBadge').className='badge ok';
-    document.getElementById('leakBadge').innerText='SYSTEM OK';
-    valveEl.className = 'indicator ' + (j.valve? 'on':'off');
-  }
+  if(leak){
+    document.getElementById('leakBadge').className='badge danger';
+    document.getElementById('leakBadge').innerText='WATER LEAKAGE DETECTED! (LOCKED)';
+    valveEl.className = 'indicator off'; 
+  } else {
+    document.getElementById('leakBadge').className='badge ok';
+    document.getElementById('leakBadge').innerText='SYSTEM OK';
+    valveEl.className = 'indicator ' + (j.valve? 'on':'off');
+  }
 
-  const imgOk   = document.getElementById('imgOk');
-  const imgLeak = document.getElementById('imgLeak');
-  if (imgOk && imgLeak) {
-    if (leak) {
-      imgOk.style.display   = 'none';
-      imgLeak.style.display = 'block';
-    } else {
-      imgOk.style.display   = 'block';
-      imgLeak.style.display = 'none';
-    }
-  }
+  const imgOk   = document.getElementById('imgOk');
+  const imgLeak = document.getElementById('imgLeak');
+  if (imgOk && imgLeak) {
+    if (leak) {
+      imgOk.style.display   = 'none';
+      imgLeak.style.display = 'block';
+    } else {
+      imgOk.style.display   = 'block';
+      imgLeak.style.display = 'none';
+    }
+  }
 
-  const ml1 = pctToMlps(f1).toFixed(1);
-  const ml2 = pctToMlps(f2).toFixed(1);
-  appendLog(
-    'updated: f1='+f1+'% ('+ml1+' mL/s) '+
-    'f2='+f2+'% ('+ml2+' mL/s) '+
-    'pump='+j.pump+' valve='+j.valve + (leak ? ' (LEAK LOCK)' : '')
-  );
+  const ml1 = pctToMlps(f1).toFixed(1);
+  const ml2 = pctToMlps(f2).toFixed(1);
+  appendLog(
+    'updated: f1='+f1+'% ('+ml1+' mL/s) '+
+    'f2='+f2+'% ('+ml2+' mL/s) '+
+    'pump='+j.pump+' valve='+j.valve + (leak ? ' (LEAK LOCK)' : '')
+  );
 
-  document.getElementById('lastUpdate').innerText = new Date().toLocaleTimeString();
-  const btn=document.getElementById('toggleBtn');
-  btn.className = 'btn ' + (j.pump? 'on':'off');
-  btn.innerText = j.pump? 'Turn Pump OFF' : 'Turn Pump ON';
+  document.getElementById('lastUpdate').innerText = new Date().toLocaleTimeString();
+  const btn=document.getElementById('toggleBtn');
+  btn.className = 'btn ' + (j.pump? 'on':'off');
+  btn.innerText = j.pump? 'Turn Pump OFF' : 'Turn Pump ON';
 };
 
+
+// ----- PERBAIKAN UPDATE CHART: Menggunakan fungsi formatTime baru -----
 const updateChartSeries=()=>{
-  if(!lineChart || !lineChartMlps || historyArray.length === 0) return;
+  if(!lineChart || !lineChartMlps || historyArray.length === 0) return;
 
-  let arr = historyArray.slice(); 
-  
-  const totalSamples = arr.length;
-  const displaySize = parseInt(document.getElementById('zoomRange').value || '30');
+  let arr = historyArray.slice(); 
+  
+  const totalSamples = arr.length;
+  const displaySize = parseInt(document.getElementById('zoomRange').value || '30');
 
-  if(dataOffset < 0) dataOffset = 0;
-  if(dataOffset > totalSamples - displaySize) {
-    dataOffset = Math.max(0, totalSamples - displaySize);
-  }
-  
-  const endIndex = totalSamples - dataOffset;
-  const startIndex = totalSamples - displaySize - dataOffset;
-  const displayArr = arr.slice(Math.max(0, startIndex), endIndex);
+  if(dataOffset < 0) dataOffset = 0;
+  if(dataOffset > totalSamples - displaySize) {
+    dataOffset = Math.max(0, totalSamples - displaySize);
+  }
+  
+  document.getElementById('nextBtn').disabled = dataOffset === 0;
+  document.getElementById('prevBtn').disabled = (totalSamples <= displaySize) || (dataOffset >= totalSamples - displaySize);
 
-  const startIdxDisp = Math.max(0, startIndex) + 1;
-  const endIdxDisp = endIndex > totalSamples ? totalSamples : endIndex;
-  document.getElementById('dataRangeInfo').innerText = 
-    `Showing data ${startIdxDisp} to ${endIdxDisp} of ${totalSamples}`;
-  
-  let labels=[], d1=[], d2=[], m1=[], m2=[];
-  
-  displayArr.forEach(p=>{
-    labels.push(new Date(p.tms).toLocaleTimeString());
-    d1.push(p.f1);
-    d2.push(p.f2);
-    m1.push(pctToMlps(p.f1));
-    m2.push(pctToMlps(p.f2));
-  });
+  const endIndex = totalSamples - dataOffset;
+  const startIndex = totalSamples - displaySize - dataOffset;
+  const displayArr = arr.slice(Math.max(0, startIndex), endIndex);
 
-  lineChart.data.labels = labels;
-  lineChart.data.datasets[0].data = d1;
-  lineChart.data.datasets[1].data = d2;
-  lineChart.update();
+  const startIdxDisp = Math.max(0, startIndex) + 1;
+  const endIdxDisp = endIndex > totalSamples ? totalSamples : endIndex;
+  document.getElementById('dataRangeInfo').innerText = 
+    `Showing data ${startIdxDisp} to ${endIdxDisp} of ${totalSamples}`;
+  
+  let labels=[], d1=[], d2=[], m1=[], m2=[];
+  
+  displayArr.forEach(p=>{
+    // --- GUNAKAN FUNGSI FORMAT WAKTU DI SINI ---
+    labels.push(formatTime(p.tms)); 
+    d1.push(p.f1);
+    d2.push(p.f2);
+    m1.push(pctToMlps(p.f1));
+    m2.push(pctToMlps(p.f2));
+  });
 
-  lineChartMlps.data.labels = labels;
-  lineChartMlps.data.datasets[0].data = m1;
-  lineChartMlps.data.datasets[1].data = m2;
-  lineChartMlps.update();
+  lineChart.data.labels = labels;
+  lineChart.data.datasets[0].data = d1;
+  lineChart.data.datasets[1].data = d2;
+  lineChart.update();
+
+  lineChartMlps.data.labels = labels;
+  lineChartMlps.data.datasets[0].data = m1;
+  lineChartMlps.data.datasets[1].data = m2;
+  lineChartMlps.update();
 };
-// ... (Bagian Listeners dan Downloads tetap sama) ...
 
+// ... (SISA EVENT LISTENERS DAN FUNGSI DOWNLOAD TETAP SAMA) ...
 dbRefRealtime.on('value', (snapshot) => {
-  const data = snapshot.val();
-  updateUI(data);
+  const data = snapshot.val();
+  updateUI(data);
 }, (error) => {
-  console.error("Error reading realtime data:", error);
-  appendLog("Error reading realtime data from Firebase!");
+  console.error("Error reading realtime data:", error);
+  appendLog("Error reading realtime data from Firebase!");
 });
 
 dbRefHistory.orderByChild('tms').limitToLast(100).on('value', (snapshot) => {
-  historyArray = [];
-  snapshot.forEach((childSnapshot) => {
-    historyArray.push(childSnapshot.val());
-  });
-  historyArray.sort((a, b) => a.tms - b.tms); 
-  updateChartSeries();
+  historyArray = [];
+  snapshot.forEach((childSnapshot) => {
+    historyArray.push(childSnapshot.val());
+  });
+  historyArray.sort((a, b) => a.tms - b.tms); 
+  updateChartSeries();
 }, (error) => {
-  console.error("Error reading history data:", error);
+  console.error("Error reading history data:", error);
 });
 
-
 document.addEventListener('click', async (ev)=>{
-  if(ev.target && ev.target.id==='toggleBtn'){
-    const currentPumpState = lastData ? lastData.pump : false;
-    await dbRefControl.child('pumpToggle').set(!currentPumpState);
-  }
-  if(ev.target && ev.target.id==='openValveBtn'){
-    if(confirm("MEMBUKA KATUP MANUAL: Ini akan mereset status Lockout Kebocoran dan menjalankan Startup Delay (7s). Lanjutkan?")){
-      await dbRefControl.child('valveControl').set('open');
-    }
-  }
-  if(ev.target && ev.target.id==='closeValveBtn'){
-    if(confirm("MENUTUP KATUP MANUAL: Ini akan mengaktifkan Leak Lockout. Lanjutkan?")){
-      await dbRefControl.child('valveControl').set('close');
-    }
-  }
+  if(ev.target && ev.target.id==='toggleBtn'){
+    const currentPumpState = lastData ? lastData.pump : false;
+    await dbRefControl.child('pumpToggle').set(!currentPumpState);
+  }
+  if(ev.target && ev.target.id==='openValveBtn'){
+    if(confirm("MEMBUKA KATUP MANUAL: Ini akan mereset status Lockout Kebocoran dan menjalankan Startup Delay (7s). Lanjutkan?")){
+      await dbRefControl.child('valveControl').set('open');
+    }
+  }
+  if(ev.target && ev.target.id==='closeValveBtn'){
+    if(confirm("MENUTUP KATUP MANUAL: Ini akan mengaktifkan Leak Lockout. Lanjutkan?")){
+      await dbRefControl.child('valveControl').set('close');
+    }
+  }
 });
 
 const zoomRange = document.getElementById('zoomRange');
@@ -383,67 +452,70 @@ document.getElementById('dlCsvMlps').addEventListener('click', ()=>{ downloadCsv
 document.getElementById('dlPngMlps').addEventListener('click', ()=>{ downloadPng(lineChartMlps); });
 
 const downloadCsv = (type) => {
-  if(historyArray.length === 0) return alert('No data');
-  
-  let csv = 'tms,iso,flow1_pct,flow2_pct,flow1_mlps,flow2_mlps\n';
-  historyArray.forEach(r=>{
-    const ml1 = pctToMlps(r.f1);
-    const ml2 = pctToMlps(r.f2);
-    csv += r.tms + ','
-        + (new Date(r.tms)).toISOString() + ','
-        + r.f1 + ','
-        + r.f2 + ','
-        + ml1.toFixed(3) + ','
-        + ml2.toFixed(3) + '\n';
-  });
+  if(historyArray.length === 0) return alert('No data');
+  
+  let csv = 'tms,iso_time,formatted_time,flow1_pct,flow2_pct,flow1_mlps,flow2_mlps\n';
+  historyArray.forEach(r=>{
+    const ml1 = pctToMlps(r.f1);
+    const ml2 = pctToMlps(r.f2);
+    const date = new Date(r.tms);
+    csv += r.tms + ','
+        + date.toISOString() + ','
+        // Gunakan format waktu yang sudah diperbaiki untuk CSV juga
+        + formatTime(r.tms) + ',' 
+        + r.f1 + ','
+        + r.f2 + ','
+        + ml1.toFixed(3) + ','
+        + ml2.toFixed(3) + '\n';
+  });
 
-  const blob = new Blob([csv], {type:'text/csv'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url;
-  a.download = 'splash_data_per_sample_'+type+'.csv'; a.click(); URL.revokeObjectURL(url);
+  const blob = new Blob([csv], {type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url;
+  a.download = 'splash_data_per_sample_'+type+'.csv'; a.click(); URL.revokeObjectURL(url);
 };
 
 const downloadPng = (chart) => {
-  if(!chart) return;
-  try{
-    const imgSrc = chart.toBase64Image();
-    const img = new Image();
-    img.onload = ()=>{
-      const W = 1600, H = 900;
-      const cv = document.createElement('canvas');
-      cv.width = W; cv.height = H;
-      const ctx = cv.getContext('2d');
-      ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,W,H);
-      ctx.drawImage(img, 0, 0, W, H);
-      const url = cv.toDataURL('image/png');
-      const a = document.createElement('a'); a.href = url;
-      const type = chart.canvas.id === 'lineChart' ? 'pct' : 'mlps';
-      a.download = 'splash_chart_'+type+'.png'; a.click();
-    };
-    img.src = imgSrc;
-  }catch(e){ console.error(e); alert('Export failed'); }
+  if(!chart) return;
+  try{
+    const imgSrc = chart.toBase64Image();
+    const img = new Image();
+    img.onload = ()=>{
+      const W = 1600, H = 900;
+      const cv = document.createElement('canvas');
+      cv.width = W; cv.height = H;
+      const ctx = cv.getContext('2d');
+      ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,W,H);
+      ctx.drawImage(img, 0, 0, W, H);
+      const url = cv.toDataURL('image/png');
+      const a = document.createElement('a'); a.href = url;
+      const type = chart.canvas.id === 'lineChart' ? 'pct' : 'mlps';
+      a.download = 'splash_chart_'+type+'.png'; a.click();
+    };
+    img.src = imgSrc;
+  }catch(e){ console.error(e); alert('Export failed'); }
 };
 
 document.getElementById('prevBtn').addEventListener('click', ()=>{
-  const step = parseInt(document.getElementById('zoomRange').value || '30');
-  dataOffset += step;
-  updateChartSeries();
+  const step = parseInt(document.getElementById('zoomRange').value || '30');
+  dataOffset += step;
+  updateChartSeries();
 });
 
 document.getElementById('nextBtn').addEventListener('click', ()=>{
-  const step = parseInt(document.getElementById('zoomRange').value || '30');
-  dataOffset -= step;
-  updateChartSeries();
+  const step = parseInt(document.getElementById('zoomRange').value || '30');
+  dataOffset -= step;
+  updateChartSeries();
 });
 
 zoomRange.addEventListener('input', ()=>{
-  zoomVal.innerText = zoomRange.value;
-  dataOffset = 0;
-  updateChartSeries();
+  zoomVal.innerText = zoomRange.value;
+  dataOffset = 0;
+  updateChartSeries();
 });
 
 window.addEventListener('load', ()=>{
-  mkLine();
+  mkLine();
 });
 </script>
 </body>
