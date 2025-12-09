@@ -1,6 +1,213 @@
 <!doctype html>
 <html>
 <head>
+<meta charset='utf-8'/>
+<meta name='viewport' content='width=device-width,initial-scale=1' />
+<title>Splash - Realtime Monitoring (Firebase)</title>
+<style>
+/* Style CSS untuk tata letak dan visualisasi */
+:root{--bg:#f4fafc;--card:#eaf9ff;--accent:#1e6fb8;--ok:#19a974;--danger:#e03b3b}
+body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;padding:18px}
+.wrap{max-width:1200px;margin:auto}
+.header{display:flex;align-items:center;justify-content:center;padding:10px 0}
+.grid{display:grid;grid-template-columns:1fr 440px;gap:18px}
+.left{display:grid;gap:18px}
+.card{background:linear-gradient(180deg,#ffffff,#f9feff);padding:18px;border-radius:18px;box-shadow:0 6px 20px rgba(0,0,0,0.06)}
+.gauge-row{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.gauge{width:320px;height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--card);border-radius:12px;padding:10px}
+.gauge svg{width:220px;height:120px;overflow:visible}
+.percent{font-size:20px;color:var(--accent);font-weight:700;margin-top:6px}
+.status{background:#e8fbff;padding:14px;border-radius:12px;display:flex;flex-direction:column;gap:10px}
+.badge{display:inline-block;padding:8px 12px;border-radius:10px;font-weight:800}
+.badge.danger{background:var(--danger);color:#fff}
+.badge.ok{background:var(--ok);color:#fff}
+.status-row{display:flex;justify-content:space-between;align-items:center}
+.indicator{padding:8px 12px;border-radius:8px;font-weight:700}
+.indicator.on{background:var(--ok);color:#fff}
+.indicator.off{background:#ddd;color:#333}
+.ctrl{display:none;} /* Hapus tombol kontrol */
+.chart-card{background:linear-gradient(180deg,#fff,#f7feff);padding:14px;border-radius:12px}
+.download{background:#dff7ea;padding:8px 12px;border-radius:10px;color:#006b2f;font-weight:700;margin-left:8px;cursor:pointer;border:2px solid rgba(0,0,0,0.08)}
+.zoomRow{display:flex;align-items:center;gap:8px;margin-top:6px}
+.logs{height:140px;overflow:auto;background:#fff;padding:8px;border-radius:8px;border:1px dashed #e6f6fb}
+@media(max-width:900px){.grid{grid-template-columns:1fr;}.gauge{width:100%}}
+</style>
+
+<script src='https://cdn.jsdelivr.net/npm/chart.js'></script>
+</head>
+<body>
+<div class='wrap'>
+  <div class='header'>
+    <img src='./DESPRO.png' alt='SPLASH' style='height:200px;margin-right:12px;'>
+  </div>
+  <div class='grid'>
+    <div class='left'>
+      <div class='card'>
+        <div style='display:flex;align-items:center;justify-content:space-between'>
+          <h2 style='margin:0'>Water Flow (Realtime Firebase)</h2>
+          <div style='font-size:14px;color:#666'>Last update: <span id='lastUpdate'>--:--:--</span></div>
+        </div>
+
+        <div class='gauge-row' style='margin-top:12px'>
+          <div class='gauge' id='gauge1'>
+            <svg viewBox='0 0 220 120'>
+              <defs><linearGradient id='g1' x1='0' x2='1'><stop offset='0' stop-color='#8DE2A6'/><stop offset='0.6' stop-color='#F8C46C'/><stop offset='1' stop-color='#F06E6E'/></linearGradient></defs>
+              <path d='M20 100 A90 90 0 0 1 200 100' fill='none' stroke='#ddd' stroke-width='18' stroke-linecap='round'></path>
+              <path id='arc1' d='M20 100 A90 90 0 0 1 200 100' fill='none' stroke='url(#g1)' stroke-width='18' stroke-linecap='round' stroke-dasharray='0 565' stroke-linejoin='round'></path>
+              <line id='needle1' x1='110' y1='100' x2='110' y2='30' stroke='#58386a' stroke-width='6' stroke-linecap='round' transform='rotate(-90 110 100)'></line>
+              <circle cx='110' cy='100' r='8' fill='#58386a'></circle>
+            </svg>
+            <div class='percent' id='p1'>-- %</div>
+            <div class='percent' style='font-size:14px;color:#555' id='p1ml'>-- mL/s</div>
+          </div>
+
+          <div class='gauge' id='gauge2'>
+            <svg viewBox='0 0 220 120'>
+              <defs><linearGradient id='g2' x1='0' x2='1'><stop offset='0' stop-color='#8DE2A6'/><stop offset='0.6' stop-color='#F8C46C'/><stop offset='1' stop-color='#F06E6E'/></linearGradient></defs>
+              <path d='M20 100 A90 90 0 0 1 200 100' fill='none' stroke='#ddd' stroke-width='18' stroke-linecap='round'></path>
+              <path id='arc2' d='M20 100 A90 90 0 0 1 200 100' fill='none' stroke='url(#g2)' stroke-width='18' stroke-linecap='round' stroke-dasharray='0 565'></path>
+              <line id='needle2' x1='110' y1='100' x2='110' y2='30' stroke='#58386a' stroke-width='6' stroke-linecap='round' transform='rotate(-90 110 100)'></line>
+              <circle cx='110' cy='100' r='8' fill='#58386a'></circle>
+            </svg>
+            <div class='percent' id='p2'>-- %</div>
+            <div class='percent' style='font-size:14px;color:#555' id='p2ml'>-- mL/s</div>
+          </div>
+        </div>
+
+        <div class='status' style='margin-top:14px'>
+          <div id='leakBadge' class='badge ok'>SYSTEM OK</div>
+          <div style='display:flex;justify-content:space-between;gap:20px;align-items:center'>
+            <div>
+              <div style='margin-bottom:8px;font-weight:700'>Water Pump</div>
+              <div style='margin-bottom:8px;font-weight:700'>Solenoid Valve</div>
+            </div>
+            <div style='text-align:right'>
+              <div id='pumpLabel' class='indicator off'>-</div>
+              <div id='valveLabel' class='indicator off' style='margin-top:8px'>-</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class='card'>
+        <h3 style='margin:0 0 8px 0'>Status & Logs</h3>
+        <div id='logArea' class='logs'></div>
+      </div>
+    </div>
+
+    <div class='chart-card'>
+      <div style='display:flex;align-items:center;justify-content:space-between'>
+        <h3 style='margin:0'>Data (Last 100 Samples)</h3>
+        <div style='display:flex;align-items:center;gap:6px'>
+          <button id='dlCsvPct' class='download'>Download CSV</button>
+          <button id='dlPngPct' class='download'>Download PNG</button>
+        </div>
+      </div>
+
+      <div class='zoomRow'>
+        <label for='zoomRange'>Show last</label>
+        <input id='zoomRange' type='range' min='5' max='100' value='30' step='1' />
+        <span id='zoomVal'>30</span>data
+        <div style='font-size:12px;color:#666;margin-left:10px'>(Data Per Sampel)</div>
+      </div>
+
+      <div class='chart-nav' style='display:flex;align-items:center;justify-content:space-between;margin-top:8px'>
+        <span id='dataRangeInfo' style='font-size:12px'>Showing data -- of --</span>
+      </div>
+      <div style='margin-top:8px;font-weight:600;'>Flow (%)</div>
+      <canvas id='lineChart' style='width:100%;height:320px;margin-top:4px;'></canvas>
+
+      <div style='margin-top:12px;font-weight:600;display:flex;justify-content:space-between;align-items:center;'>
+        Flow (mL/s)
+        <div>
+          <button id='dlCsvMlps' class='download' style='font-size:12px;padding:6px 10px;'>Download CSV</button>
+          <button id='dlPngMlps' class='download' style='font-size:12px;padding:6px 10px;'>Download PNG</button>
+        </div>
+      </div>
+      <canvas id='lineChartMlps' style='width:100%;height:320px;margin-top:4px;'></canvas>
+
+      <div style='margin-top:16px;'>
+        <img id='imgOk' src='./OKEY.png' alt='Pipeline OK'
+              style='width:100%;max-height:220px;object-fit:contain;border-radius:12px;
+                     background:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.06);'>
+        <img id='imgLeak' src='./BOCOR.png' alt='Pipeline leak'
+              style='width:100%;max-height:220px;object-fit:contain;border-radius:12px;
+                     background:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.06);display:none;'>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src='https://cdn.jsdelivr.net/npm/chart.js'></script>
+<script>
+let lineChart, lineChartMlps;
+const MAX_FLOW_LPM = 30.0;
+const MLPS_MAX = MAX_FLOW_LPM * 1000.0 / 60.0;
+const pctToMlps = (pct) => (pct / 100.0) * MLPS_MAX;
+let lastHistoryData = null; 
+
+// Tambahkan definisi fungsi yang hilang (mkLine, setGauge, appendLog)
+
+const mkLine = () => {
+    const ctx=document.getElementById('lineChart').getContext('2d');
+    lineChart=new Chart(ctx,{
+      type:'line',
+      data:{labels:[],datasets:[
+        {label:'Water Flow 1 (%)',borderColor:'#19a974',pointRadius:4,backgroundColor:'transparent',data:[]},
+        {label:'Water Flow 2 (%)',borderColor:'#e74c3c',pointRadius:4,backgroundColor:'transparent',data:[]}
+      ]},
+      options:{
+        animation:{duration:200},
+        scales:{y:{min:0,max:100}},
+        plugins:{legend:{position:'top'}}
+      }
+    });
+
+    const ctx2=document.getElementById('lineChartMlps').getContext('2d');
+    lineChartMlps=new Chart(ctx2,{
+      type:'line',
+      data:{labels:[],datasets:[
+        {label:'Water Flow 1 (mL/s)',borderColor:'#19a974',pointRadius:4,backgroundColor:'transparent',data:[]},
+        {label:'Water Flow 2 (mL/s)',borderColor:'#e74c3c',pointRadius:4,backgroundColor:'transparent',data:[]}
+      ]},
+      options:{
+        animation:{duration:200},
+        scales:{y:{min:0,max:MLPS_MAX}},
+        plugins:{legend:{position:'top'}}
+      }
+    });
+};
+
+const setGauge = (id, v) => {
+    v=Math.max(0,Math.min(100,Math.round(v)));
+    const pct = v/100;
+    const dash = Math.round(565 * pct);
+    const mlps = pctToMlps(v);
+
+    if(id==='g1'){
+      document.getElementById('arc1').setAttribute('stroke-dasharray', dash+' 565');
+      const angle = -90 + (v/100)*180;
+      document.getElementById('needle1').setAttribute('transform','rotate('+angle+' 110 100)');
+      document.getElementById('p1').innerText = v + ' %';
+      document.getElementById('p1ml').innerText = mlps.toFixed(1) + ' mL/s';
+    } else {
+      document.getElementById('arc2').setAttribute('stroke-dasharray', dash+' 565');
+      const angle = -90 + (v/100)*180;
+      document.getElementById('needle2').setAttribute('transform','rotate('+angle+' 110 100)');
+      document.getElementById('p2').innerText = v + ' %';
+      document.getElementById('p2ml').innerText = mlps.toFixed(1) + ' mL/s';
+    }
+};
+
+const appendLog = (s) => {
+    const la = document.getElementById('logArea');
+    const now = new Date().toLocaleTimeString(); 
+    la.innerHTML = '[' + now + '] ' + s + '<br>' + la.innerHTML;
+};
+
+// END Fungsi yang hilang
+</script>
+
 <script type="module">
   // Import Firebase SDKs
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
@@ -8,7 +215,7 @@
 
   // Your web app's Firebase configuration
   const firebaseConfig = {
-      apiKey: "AIzaSyAlImS2cKAHhuvcpj3Y1ZC1V6LpQMH1DkI", // Gunakan API Key yang sama
+      apiKey: "AIzaSyAlImS2cKAHhuvcpj3Y1ZC1V6LpQMH1DkI",
       authDomain: "splash-kelompok28.firebaseapp.com",
       databaseURL: "https://splash-kelompok28-default-rtdb.asia-southeast1.firebasedatabase.app",
       projectId: "splash-kelompok28",
@@ -22,14 +229,13 @@
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
-  let lineChart, lineChartMlps;
-  // ... (Konstanta dan fungsi lain seperti setGauge, mkLine, pctToMlps tetap sama) ...
+  // Variabel Global dari script non-module
+  let lastHistoryData; 
   
   // ================= FIREBASE LISTENERS =================
 
-  const updateRealtimeUI = (data) => {
-      // Ambil data realtime dari Firebase
-      const j = data.val();
+  const updateRealtimeUI = (snapshot) => {
+      const j = snapshot.val();
       if (!j) return;
 
       const f1 = j.flow1, f2 = j.flow2;
@@ -37,50 +243,67 @@
       setGauge('g2', f2);
 
       const pumpEl = document.getElementById('pumpLabel');
-      pumpEl.innerText = j.pumpState ? 'ON' : 'OFF'; // Gunakan pumpState dari Firebase
+      pumpEl.innerText = j.pumpState ? 'ON' : 'OFF'; 
       pumpEl.className = 'indicator ' + (j.pumpState ? 'on' : 'off');
 
       const valveEl = document.getElementById('valveLabel');
-      valveEl.innerText = j.valveState ? 'OPEN' : 'CLOSED'; // Gunakan valveState
+      valveEl.innerText = j.valveState ? 'OPEN' : 'CLOSED'; 
 
       const leak = j.leakLockout || false;
 
       if (leak) {
           document.getElementById('leakBadge').className = 'badge danger';
           document.getElementById('leakBadge').innerText = 'WATER LEAKAGE DETECTED! (LOCKED)';
-          // ... (logika gambar kebocoran) ...
       } else {
           document.getElementById('leakBadge').className = 'badge ok';
           document.getElementById('leakBadge').innerText = 'SYSTEM OK';
-          // ... (logika gambar OK) ...
+      }
+
+      // Gambar: show/hide
+      const imgOk    = document.getElementById('imgOk');
+      const imgLeak = document.getElementById('imgLeak');
+      if (imgOk && imgLeak) {
+          if (leak) {
+              imgOk.style.display    = 'none';
+              imgLeak.style.display = 'block';
+          } else {
+              imgOk.style.display    = 'block';
+              imgLeak.style.display = 'none';
+          }
       }
       
-      document.getElementById('lastUpdate').innerText = new Date(j.timestamp).toLocaleTimeString();
-      // Hilangkan tombol toggle/kontrol manual karena hanya monitoring
+      const ml1 = pctToMlps(f1).toFixed(1);
+      const ml2 = pctToMlps(f2).toFixed(1);
+      
+      const statusText = `F1=${f1}% (${ml1} mL/s) F2=${f2}% (${ml2} mL/s) Pump:${j.pumpState?'ON':'OFF'} Valve:${j.valveState?'OPEN':'CLOSED'} ${leak ? '(LEAK LOCK)' : ''}`;
+      appendLog(statusText);
+      
+      document.getElementById('lastUpdate').innerText = j.timestamp ? new Date(j.timestamp).toLocaleTimeString() : new Date().toLocaleTimeString();
   };
 
-  const updateHistoryChart = (data) => {
-      const history = data.val();
+  const updateHistoryChart = (snapshot) => {
+      const history = snapshot.val();
       if (!history) return;
+      lastHistoryData = history; // Simpan data history
 
       const keys = Object.keys(history);
       keys.sort((a, b) => parseInt(a) - parseInt(b)); // Urutkan berdasarkan timestamp (key)
 
-      // Hanya ambil N data terakhir untuk performa
       const totalSamples = keys.length;
       const displaySize = parseInt(document.getElementById('zoomRange').value || '30');
+      
       const startKeyIndex = Math.max(0, totalSamples - displaySize);
       
       const labels = [], d1 = [], d2 = [], m1 = [], m2 = [];
 
       for (let i = startKeyIndex; i < totalSamples; i++) {
-          const tms = keys[i];
-          const p = history[tms];
+          const tms_ms = parseInt(keys[i]);
+          const p = history[keys[i]];
           
-          const f1 = p.f1;
-          const f2 = p.f2;
+          const f1 = p.f1; 
+          const f2 = p.f2; 
           
-          labels.push(new Date(parseInt(tms)).toLocaleTimeString());
+          labels.push(new Date(tms_ms).toLocaleTimeString());
           d1.push(f1);
           d2.push(f2);
           m1.push(pctToMlps(f1));
@@ -105,24 +328,24 @@
   const rtRef = ref(db, 'realtime');
   onValue(rtRef, updateRealtimeUI);
 
-  // Listener untuk data History (Chart), batasi hanya 100 data terakhir
-  const histQuery = query(ref(db, 'history'), limitToLast(100)); // Ambil 100 data terakhir
+  // Listener untuk data History (Chart), batasi 100 data terakhir
+  const histQuery = query(ref(db, 'history'), limitToLast(100)); 
   onValue(histQuery, updateHistoryChart);
 
+  // ================= UTILS DOWNLOAD (DIHAPUS UNTUK MENJAGA KEBERSIHAN) =================
+  // Anda harus memasukkan kembali fungsi downloadCsv dan downloadPng di sini jika Anda ingin tombol download berfungsi.
 
-  window.addEventListener('load', () => {
-      mkLine();
-      // Tidak perlu setInterval(fetchData, 1000) lagi, karena onValue bersifat realtime/listener
-      // Tambahkan event listener untuk zoomRange agar tetap berfungsi
-      document.getElementById('zoomRange').addEventListener('input', () => {
-          document.getElementById('zoomVal').innerText = document.getElementById('zoomRange').value;
-          // Panggil ulang updateHistoryChart dengan data terakhir dari Firebase
-          // Anda mungkin perlu menyimpan data history yang diambil terakhir di variabel global
-          // Atau ambil ulang data dari Firebase dengan limit yang sesuai. Untuk kesederhanaan, kita pakai 100 terakhir.
-          onValue(histQuery, updateHistoryChart, { onlyOnce: true });
-      });
+  // EVENT LISTENERS UNTUK ZOOM
+  document.getElementById('zoomRange').addEventListener('input', () => {
+      document.getElementById('zoomVal').innerText = document.getElementById('zoomRange').value;
+      if(lastHistoryData) updateHistoryChart({ val: () => lastHistoryData });
   });
 
-  // Hapus semua fungsi/kode yang terkait dengan webserver lokal ESP32 seperti fetchData, toggleBtn, openValveBtn, closeValveBtn, downloadCsv, downloadPng, prevBtn, nextBtn karena akan menjadi kompleks jika dikaitkan dengan struktur data Firebase.
-  // Jika ingin tetap ada tombol Download CSV/PNG, Anda harus memuat seluruh data history terlebih dahulu dari Firebase.
+  // ================= INIT =================
+  window.addEventListener('load', () => {
+      mkLine();
+  });
 </script>
+
+</body>
+</html>
