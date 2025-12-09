@@ -39,7 +39,6 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;
 <body>
 <div class="wrap">
   <div class="header">
-    <!-- pakai URL penuh GitHub Pages -->
     <img src="https://nasyamutiara06.github.io/SPLASH_Kelompok28/DESPRO.png"
          alt="SPLASH" style="height:200px;margin-right:12px;">
   </div>
@@ -98,7 +97,7 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;
 
           <div class="ctrl">
             <button id="toggleBtn" class="btn off">Turn Pump ON</button>
-            <div style="font-size:12px;color:#666">Physical button on device is used for control</div>
+            <div style="font-size:12px;color:#666">You can use web or physical button</div>
           </div>
         </div>
       </div>
@@ -270,7 +269,7 @@ const updateUI = (j) => {
   document.getElementById('lastUpdate').innerText = new Date().toLocaleTimeString();
   const btn = document.getElementById('toggleBtn');
   btn.className = 'btn ' + (j.pump? 'on':'off');
-  btn.innerText = j.pump? 'Pump ON (via device)' : 'Pump OFF (via device)';
+  btn.innerText = j.pump? 'Turn Pump OFF' : 'Turn Pump ON';
 
   updateChartSeries(j);
 };
@@ -281,7 +280,44 @@ const appendLog = (s) => {
   la.innerHTML = '['+now+'] '+s + '<br>' + la.innerHTML;
 };
 
-// ambil data dari Firebase
+// ============= KIRIM COMMAND KE FIREBASE (WEB -> ESP) =============
+
+async function sendPumpToggle() {
+  try{
+    const body = JSON.stringify({action:"toggle", ts:Date.now()});
+    await fetch(FB_BASE + '/cmdPump.json', {
+      method:'PUT',
+      headers:{'Content-Type':'application/json'},
+      body
+    });
+    appendLog('Web: request PUMP TOGGLE sent');
+  }catch(e){
+    console.log(e);
+    alert('Gagal kirim perintah pump');
+  }
+}
+
+async function sendValveControl(state) {
+  try{
+    const body = JSON.stringify({action:state, ts:Date.now()});
+    await fetch(FB_BASE + '/cmdValve.json', {
+      method:'PUT',
+      headers:{'Content-Type':'application/json'},
+      body
+    });
+    if(state === 'open'){
+      appendLog('Web: request VALVE OPEN / RESET sent');
+    } else {
+      appendLog('Web: request VALVE CLOSE sent');
+    }
+  }catch(e){
+    console.log(e);
+    alert('Gagal kirim perintah valve');
+  }
+}
+
+// ============= AMBIL DATA DARI FIREBASE UNTUK DASHBOARD =============
+
 const fetchData = async () => {
   try {
     const latestResp = await fetch(FB_BASE + '/latest.json');
@@ -315,13 +351,21 @@ const fetchData = async () => {
   }
 };
 
-// klik di web hanya info, tidak kontrol ESP
+// klik tombol kontrol
 document.addEventListener('click', (ev)=>{
-  if(ev.target && (
-      ev.target.id === 'toggleBtn' ||
-      ev.target.id === 'openValveBtn' ||
-      ev.target.id === 'closeValveBtn')) {
-    alert('Kontrol manual dilakukan dari alat (tombol fisik), bukan dari web.');
+  if(!ev.target) return;
+  if(ev.target.id === 'toggleBtn'){
+    sendPumpToggle();
+  }
+  if(ev.target.id === 'openValveBtn'){
+    if(confirm("MEMBUKA KATUP MANUAL dari web: akan mereset Leak Lockout dan menjalankan Startup Delay (jika pump ON). Lanjutkan?")){
+      sendValveControl('open');
+    }
+  }
+  if(ev.target.id === 'closeValveBtn'){
+    if(confirm("MENUTUP KATUP MANUAL dari web: akan mengaktifkan Leak Lockout. Lanjutkan?")){
+      sendValveControl('close');
+    }
   }
 });
 
