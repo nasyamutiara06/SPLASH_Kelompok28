@@ -39,7 +39,8 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;
 <body>
 <div class='wrap'>
   <div class='header'>
-    <img src='/DESPRO.png' alt='SPLASH' style='height:200px;margin-right:12px;'>
+    <!-- logo: path-nya cukup DESPRO.png -->
+    <img src='DESPRO.png' alt='SPLASH' style='height:200px;margin-right:12px;'>
   </div>
   <div class='grid'>
     <div class='left'>
@@ -142,10 +143,10 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;
 
       <!-- Gambar status pipa: preload dua-duanya -->
       <div style='margin-top:16px;'>
-        <img id='imgOk' src='/OKEY.png' alt='Pipeline OK'
+        <img id='imgOk' src='OKEY.png' alt='Pipeline OK'
              style='width:100%;max-height:220px;object-fit:contain;border-radius:12px;
                     background:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.06);'>
-        <img id='imgLeak' src='/BOCOR.png' alt='Pipeline leak'
+        <img id='imgLeak' src='BOCOR.png' alt='Pipeline leak'
              style='width:100%;max-height:220px;object-fit:contain;border-radius:12px;
                     background:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.06);display:none;'>
       </div>
@@ -153,7 +154,6 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;
   </div>
 </div>
 
-<script src='https://cdn.jsdelivr.net/npm/chart.js'></script>
 <script>
 let lineChart, lineChartMlps, lastData=null;
 const MAX_FLOW_LPM = 30.0;
@@ -236,7 +236,6 @@ const updateUI=(j)=>{
     document.getElementById('leakBadge').innerText='SYSTEM OK';
   }
 
-  // Gambar: show/hide tanpa reload file, supaya barengan sama teks
   const imgOk   = document.getElementById('imgOk');
   const imgLeak = document.getElementById('imgLeak');
   if (imgOk && imgLeak) {
@@ -435,7 +434,7 @@ zoomRange.addEventListener('input', ()=>{
 window.addEventListener('load', ()=>{
   mkLine();
   fetchData();
-  setInterval(fetchData, 1000);   // 1 detik, sinkron dengan sampling
+  setInterval(fetchData, 1000);
 });
 </script>
 
