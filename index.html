@@ -5,7 +5,7 @@
 <meta name='viewport' content='width=device-width,initial-scale=1' />
 <title>Splash - Realtime Monitoring (Firebase)</title>
 <style>
-/* Style CSS tetap sama, namun tombol kontrol akan disembunyikan/dihapus */
+/* Style CSS tetap sama */
 :root{--bg:#f4fafc;--card:#eaf9ff;--accent:#1e6fb8;--ok:#19a974;--danger:#e03b3b}
 body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;padding:18px}
 .wrap{max-width:1200px;margin:auto}
@@ -25,7 +25,7 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;
 .indicator{padding:8px 12px;border-radius:8px;font-weight:700}
 .indicator.on{background:var(--ok);color:#fff}
 .indicator.off{background:#ddd;color:#333}
-/* .ctrl{display:none;} <--- Tombol kontrol Dihapus di HTML */
+.ctrl{display:none;} /* Tombol kontrol disembunyikan sesuai permintaan */
 .chart-card{background:linear-gradient(180deg,#fff,#f7feff);padding:14px;border-radius:12px}
 .download{background:#dff7ea;padding:8px 12px;border-radius:10px;color:#006b2f;font-weight:700;margin-left:8px;cursor:pointer;border:2px solid rgba(0,0,0,0.08)}
 .zoomRow{display:flex;align-items:center;gap:8px;margin-top:6px}
@@ -44,7 +44,7 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;
     <div class='left'>
       <div class='card'>
         <div style='display:flex;align-items:center;justify-content:space-between'>
-          <h2 style='margin:0'>Water Flow</h2>
+          <h2 style='margin:0'>Water Flow (Realtime Firebase)</h2>
           <div style='font-size:14px;color:#666'>Last update: <span id='lastUpdate'>--:--:--</span></div>
         </div>
 
@@ -91,7 +91,7 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;
 
       <div class='card'>
         <h3 style='margin:0 0 8px 0'>Status & Logs</h3>
-        <div id='logArea' class='logs'></div> 
+        <div id='logArea' class='logs'></div>
       </div>
     </div>
 
@@ -163,10 +163,9 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;
   const MAX_FLOW_LPM = 30.0;
   const MLPS_MAX = MAX_FLOW_LPM * 1000.0 / 60.0;
   const pctToMlps = (pct) => (pct / 100.0) * MLPS_MAX;
-  let lastHistoryData = null; // Menyimpan data history terakhir
+  let lastHistoryData = null; 
 
   const mkLine = () => {
-      // ... (Fungsi inisialisasi Chart.js tetap sama) ...
       const ctx=document.getElementById('lineChart').getContext('2d');
       lineChart=new Chart(ctx,{
         type:'line',
@@ -197,7 +196,6 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;
   };
 
   const setGauge = (id, v) => {
-      // ... (Fungsi setGauge tetap sama) ...
       v=Math.max(0,Math.min(100,Math.round(v)));
       const pct = v/100;
       const dash = Math.round(565 * pct);
@@ -222,6 +220,7 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;
       const j = snapshot.val();
       if (!j) return;
 
+      // Ambil field dari Firebase: pumpState, valveState, leakLockout (sesuai yang dikirim HTTPClient)
       const f1 = j.flow1, f2 = j.flow2;
       setGauge('g1', f1);
       setGauge('g2', f2);
@@ -278,7 +277,7 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;
       lastHistoryData = history; // Simpan data history
 
       const keys = Object.keys(history);
-      keys.sort((a, b) => parseInt(a) - parseInt(b)); 
+      keys.sort((a, b) => parseInt(a) - parseInt(b)); // Urutkan berdasarkan timestamp (key)
 
       const totalSamples = keys.length;
       const displaySize = parseInt(document.getElementById('zoomRange').value || '30');
@@ -292,8 +291,8 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;
           const tms = keys[i];
           const p = history[tms];
           
-          const f1 = p.f1;
-          const f2 = p.f2;
+          const f1 = p.f1; // Mengambil f1 dari history data
+          const f2 = p.f2; // Mengambil f2 dari history data
           
           labels.push(new Date(parseInt(tms)).toLocaleTimeString());
           d1.push(f1);
@@ -322,13 +321,12 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;
   const rtRef = ref(db, 'realtime');
   onValue(rtRef, updateRealtimeUI);
 
-  // Listener untuk data History (Chart), batasi 100 data terakhir (sesuai MAX_SAMPLES Arduino)
+  // Listener untuk data History (Chart), batasi 100 data terakhir
   const histQuery = query(ref(db, 'history'), limitToLast(100)); 
   onValue(histQuery, updateHistoryChart);
 
 
   // ================= UTILS DOWNLOAD =================
-  // Download CSV dan PNG (Dibatasi pada 100 sampel terakhir yang diambil)
 
   const downloadCsv = (historyData, type) => {
       if(!historyData) return alert('No data available in history.');
@@ -339,8 +337,6 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;
       let csv = 'timestamp_ms,iso_date,flow1_pct,flow2_pct,pump_state,valve_state,leak_lockout\n';
       keys.forEach(tms=>{
         const r = historyData[tms];
-        const ml1 = pctToMlps(r.f1);
-        const ml2 = pctToMlps(r.f2);
         csv += tms + ','
           + (new Date(parseInt(tms))).toISOString() + ','
           + r.f1 + ','
@@ -400,7 +396,6 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;
   const zoomRange = document.getElementById('zoomRange');
   zoomRange.addEventListener('input', () => {
       document.getElementById('zoomVal').innerText = zoomRange.value;
-      // Memaksa update chart dengan data yang sudah ada (100 sampel terakhir)
       if(lastHistoryData) updateHistoryChart({ val: () => lastHistoryData });
   });
   
@@ -408,8 +403,10 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;
 
   window.addEventListener('load', () => {
       mkLine();
+      // Tidak perlu fetchData atau setInterval, karena onValue Firebase bersifat realtime
   });
 </script>
 
 </body>
 </html>
+
