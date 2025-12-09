@@ -140,6 +140,10 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;
 
 <script src='https://cdn.jsdelivr.net/npm/chart.js'></script>
 <script>
+// ====================================================================================
+// BAGIAN 1: VARIABEL & FUNGSI HELPER NON-FIREBASE
+// ====================================================================================
+
 let lineChart, lineChartMlps;
 const MAX_FLOW_LPM = 30.0;
 const MLPS_MAX = MAX_FLOW_LPM * 1000.0 / 60.0;
@@ -167,7 +171,6 @@ const formatTimeWIB = (timestamp_ms) => {
 // =======================================================
 
 
-// Fungsi Helper
 const mkLine = () => {
     const ctx=document.getElementById('lineChart').getContext('2d');
     lineChart=new Chart(ctx,{
@@ -221,218 +224,143 @@ const setGauge = (id, v) => {
 
 const appendLog = (s) => {
     const la = document.getElementById('logArea');
-    // Menggunakan format WIB untuk Log
+    // Menggunakan format WIB untuk Log (sesuai permintaan)
     const now = formatTimeWIB(Date.now()); 
     la.innerHTML = '[' + now + '] ' + s + '<br>' + la.innerHTML;
 };
-</script>
 
 
-<script type="module">
-  // Import Firebase SDKs
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-  import { getDatabase, ref, onValue, query, limitToLast } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+// ====================================================================================
+// BAGIAN 2: FIREBASE LISTENER DAN LOGIKA UTAMA
+// ====================================================================================
 
-  // Konfigurasi Firebase Anda
-  const firebaseConfig = {
-      apiKey: "AIzaSyAlImS2cKAHhuvcpj3Y1ZC1V6LpQMH1DkI",
-      authDomain: "splash-kelompok28.firebaseapp.com",
-      databaseURL: "https://splash-kelompok28-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "splash-kelompok28",
-      storageBucket: "splash-kelompok28.firebasestorage.app",
-      messagingSenderId: "797027515264",
-      appId: "1:797027515264:web:8404eb711cfb5a0d159f65",
-      measurementId: "G-KSCXTLCMTL"
-  };
+window.addEventListener('load', () => {
+    mkLine();
+    
+    // Pemuatan dinamis Firebase SDK
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.innerHTML = `
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getDatabase, ref, onValue, query, limitToLast } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-
-  // ================= FIREBASE LISTENERS =================
-
-  const updateRealtimeUI = (snapshot) => {
-      const j = snapshot.val();
-      if (!j) return;
-
-      const f1 = j.flow1, f2 = j.flow2;
-      setGauge('g1', f1);
-      setGauge('g2', f2);
-
-      const pumpEl = document.getElementById('pumpLabel');
-      pumpEl.innerText = j.pumpState ? 'ON' : 'OFF'; 
-      pumpEl.className = 'indicator ' + (j.pumpState ? 'on' : 'off');
-
-      const valveEl = document.getElementById('valveLabel');
-      valveEl.innerText = j.valveState ? 'OPEN' : 'CLOSED'; 
-
-      const leak = j.leakLockout || false;
-
-      if (leak) {
-          document.getElementById('leakBadge').className = 'badge danger';
-          document.getElementById('leakBadge').innerText = 'WATER LEAKAGE DETECTED! (LOCKED)';
-      } else {
-          document.getElementById('leakBadge').className = 'badge ok';
-          document.getElementById('leakBadge').innerText = 'SYSTEM OK';
-      }
-
-      // Gambar: show/hide
-      const imgOk    = document.getElementById('imgOk');
-      const imgLeak = document.getElementById('imgLeak');
-      if (imgOk && imgLeak) {
-          if (leak) {
-              imgOk.style.display    = 'none';
-              imgLeak.style.display = 'block';
-          } else {
-              imgOk.style.display    = 'block';
-              imgLeak.style.display = 'none';
-          }
-      }
-      
-      const ml1 = pctToMlps(f1).toFixed(1);
-      const ml2 = pctToMlps(f2).toFixed(1);
-      
-      const statusText = `F1=${f1}% (${ml1} mL/s) F2=${f2}% (${ml2} mL/s) Pump:${j.pumpState?'ON':'OFF'} Valve:${j.valveState?'OPEN':'CLOSED'} ${leak ? '(LEAK LOCK)' : ''}`;
-      
-      // *** PERBAIKAN WAKTU: Last Update (Memaksa ke WIB) ***
-      if (j.timestamp) {
-          document.getElementById('lastUpdate').innerText = formatTimeWIB(j.timestamp);
-      }
-  };
-
-  const updateHistoryChart = (snapshot) => {
-      const history = snapshot.val();
-      if (!history) return;
-      window.lastHistoryData = history; // Simpan ke global (window) untuk tombol download
-
-      const keys = Object.keys(history);
-      keys.sort((a, b) => parseInt(a) - parseInt(b));
-
-      const totalSamples = keys.length;
-      const displaySize = parseInt(document.getElementById('zoomRange').value || '30');
-      
-      const startKeyIndex = Math.max(0, totalSamples - displaySize);
-      
-      const labels = [], d1 = [], d2 = [], m1 = [], m2 = [];
-
-      for (let i = startKeyIndex; i < totalSamples; i++) {
-          const tms_ms = parseInt(keys[i]);
-          const p = history[keys[i]];
-          
-          const f1 = p.f1; 
-          const f2 = p.f2; 
-          
-          // *** PERBAIKAN WAKTU: Label Grafik (Memaksa ke WIB) ***
-          labels.push(formatTimeWIB(tms_ms));
-          d1.push(f1);
-          d2.push(f2);
-          m1.push(pctToMlps(f1));
-          m2.push(pctToMlps(f2));
-      }
-
-      lineChart.data.labels = labels;
-      lineChart.data.datasets[0].data = d1;
-      lineChart.data.datasets[1].data = d2;
-      lineChart.update();
-
-      lineChartMlps.data.labels = labels;
-      lineChartMlps.data.datasets[0].data = m1;
-      lineChartMlps.data.datasets[1].data = m2;
-      lineChartMlps.update();
-
-      document.getElementById('dataRangeInfo').innerText = 
-          `Showing last ${labels.length} data of ${totalSamples}`;
-  };
-
-  // Listener untuk data Realtime (Gauge)
-  const rtRef = ref(db, 'realtime');
-  onValue(rtRef, updateRealtimeUI);
-
-  // Listener untuk data History (Chart), batasi 100 data terakhir
-  const histQuery = query(ref(db, 'history'), limitToLast(100)); 
-  onValue(histQuery, updateHistoryChart);
-
-
-  // ================= UTILS DOWNLOAD =================
-  const downloadCsv = (historyData) => {
-      if(!historyData) return alert('No data available in history.');
-
-      const keys = Object.keys(historyData);
-      keys.sort((a,b)=>parseInt(a)-parseInt(b));
-
-      let csv = 'timestamp_ms,iso_date,time_wib,flow1_pct,flow2_pct,pump_state,valve_state,leak_lockout\n';
-      keys.forEach(tms_key=>{
-        const tms_ms = parseInt(tms_key);
-        const r = historyData[tms_key];
-        
-        csv += tms_ms + ','
-          + (new Date(tms_ms)).toISOString() + ','
-          + formatTimeWIB(tms_ms) + ',' // Tambahkan waktu WIB ke CSV
-          + r.f1 + ','
-          + r.f2 + ','
-          + (r.p?'TRUE':'FALSE') + ','
-          + (r.v?'OPEN':'CLOSED') + ','
-          + (r.l?'LOCKED':'FALSE') + '\n';
-      });
-
-      const blob = new Blob([csv], {type:'text/csv'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href = url;
-      a.download = 'splash_firebase_history.csv'; a.click(); URL.revokeObjectURL(url);
-  };
-
-  const downloadPng = (chart) => {
-      if(!chart) return;
-      try{
-        const imgSrc = chart.toBase64Image();
-        const img = new Image();
-        img.onload = ()=>{
-          const W = 1600, H = 900;
-          const cv = document.createElement('canvas');
-          cv.width = W; cv.height = H;
-          const ctx = cv.getContext('2d');
-          ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,W,H);
-          ctx.drawImage(img, 0, 0, W, H);
-          const url = cv.toDataURL('image/png');
-          const a = document.createElement('a'); a.href = url;
-          const type = chart.canvas.id === 'lineChart' ? 'pct' : 'mlps';
-          a.download = 'splash_firebase_chart_'+type+'.png'; a.click();
+        // Konfigurasi Firebase Anda
+        const firebaseConfig = {
+            apiKey: "AIzaSyAlImS2cKAHhuvcpj3Y1ZC1V6LpQMH1DkI",
+            authDomain: "splash-kelompok28.firebaseapp.com",
+            databaseURL: "https://splash-kelompok28-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "splash-kelompok28",
+            storageBucket: "splash-kelompok28.firebasestorage.app",
+            messagingSenderId: "797027515264",
+            appId: "1:797027515264:web:8404eb711cfb5a0d159f65",
+            measurementId: "G-KSCXTLCMTL"
         };
-        img.src = imgSrc;
-      }catch(e){ console.error(e); alert('Export failed'); }
-  };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        const updateRealtimeUI = (snapshot) => {
+            const j = snapshot.val();
+            if (!j) return;
+
+            setGauge('g1', j.flow1);
+            setGauge('g2', j.flow2);
+
+            document.getElementById('pumpLabel').innerText = j.pumpState ? 'ON' : 'OFF'; 
+            document.getElementById('pumpLabel').className = 'indicator ' + (j.pumpState ? 'on' : 'off');
+
+            document.getElementById('valveLabel').innerText = j.valveState ? 'OPEN' : 'CLOSED'; 
+
+            const leak = j.leakLockout || false;
+
+            if (leak) {
+                document.getElementById('leakBadge').className = 'badge danger';
+                document.getElementById('leakBadge').innerText = 'WATER LEAKAGE DETECTED! (LOCKED)';
+                document.getElementById('imgOk').style.display    = 'none';
+                document.getElementById('imgLeak').style.display = 'block';
+            } else {
+                document.getElementById('leakBadge').className = 'badge ok';
+                document.getElementById('leakBadge').innerText = 'SYSTEM OK';
+                document.getElementById('imgOk').style.display    = 'block';
+                document.getElementById('imgLeak').style.display = 'none';
+            }
+            
+            const ml1 = pctToMlps(j.flow1).toFixed(1);
+            const ml2 = pctToMlps(j.flow2).toFixed(1);
+            
+            const statusText = \`F1=\${j.flow1}% (\${ml1} mL/s) F2=\${j.flow2}% (\${ml2} mL/s) Pump:\${j.pumpState?'ON':'OFF'} Valve:\${j.valveState?'OPEN':'CLOSED'} \${leak ? '(LEAK LOCK)' : ''}\`;
+            appendLog(statusText);
+            
+            // *** PERBAIKAN WAKTU: Last Update (Memaksa ke WIB) ***
+            if (j.timestamp) {
+                document.getElementById('lastUpdate').innerText = formatTimeWIB(j.timestamp);
+            }
+        };
+
+        const updateHistoryChart = (snapshot) => {
+            const history = snapshot.val();
+            if (!history) return;
+            window.lastHistoryData = history; 
+
+            const keys = Object.keys(history);
+            keys.sort((a, b) => parseInt(a) - parseInt(b));
+
+            const totalSamples = keys.length;
+            const displaySize = parseInt(document.getElementById('zoomRange').value || '30');
+            
+            const startKeyIndex = Math.max(0, totalSamples - displaySize);
+            
+            const labels = [], d1 = [], d2 = [], m1 = [], m2 = [];
+
+            for (let i = startKeyIndex; i < totalSamples; i++) {
+                const tms_ms = parseInt(keys[i]);
+                const p = history[keys[i]];
+                
+                // *** PERBAIKAN WAKTU: Label Grafik (Memaksa ke WIB) ***
+                labels.push(formatTimeWIB(tms_ms)); 
+                d1.push(p.f1);
+                d2.push(p.f2);
+                m1.push(pctToMlps(p.f1));
+                m2.push(pctToMlps(p.f2));
+            }
+
+            lineChart.data.labels = labels;
+            lineChart.data.datasets[0].data = d1;
+            lineChart.data.datasets[1].data = d2;
+            lineChart.update();
+
+            lineChartMlps.data.labels = labels;
+            lineChartMlps.data.datasets[0].data = m1;
+            lineChartMlps.data.datasets[1].data = m2;
+            lineChartMlps.update();
+
+            document.getElementById('dataRangeInfo').innerText = 
+                \`Showing last \${labels.length} data of \${totalSamples}\`;
+        };
+        
+        // Listener untuk data Realtime (Gauge)
+        const rtRef = ref(db, 'realtime');
+        onValue(rtRef, updateRealtimeUI);
+
+        // Listener untuk data History (Chart), batasi 100 data terakhir
+        const histQuery = query(ref(db, 'history'), limitToLast(100)); 
+        onValue(histQuery, updateHistoryChart);
 
 
-  // ================= EVENT LISTENERS =================
+        // Event Listener untuk Zoom Range (Memanggil ulang chart update dengan data yang sudah di-cache)
+        document.getElementById('zoomRange').addEventListener('input', () => {
+            document.getElementById('zoomVal').innerText = document.getElementById('zoomRange').value;
+            if(window.lastHistoryData) updateHistoryChart({ val: () => window.lastHistoryData });
+        });
+        
+        // --- Sisipkan Fungsi Download di sini jika ingin berfungsi ---
 
-  document.getElementById('dlCsvPct').addEventListener('click', ()=>{
-      downloadCsv(window.lastHistoryData);
-  });
+    `;
+    document.body.appendChild(script);
 
-  document.getElementById('dlPngPct').addEventListener('click', ()=>{
-      downloadPng(lineChart);
-  });
-
-  document.getElementById('dlCsvMlps').addEventListener('click', ()=>{
-      downloadCsv(window.lastHistoryData);
-  });
-
-  document.getElementById('dlPngMlps').addEventListener('click', ()=>{
-      downloadPng(lineChartMlps);
-  });
-
-
-  const zoomRange = document.getElementById('zoomRange');
-  zoomRange.addEventListener('input', () => {
-      document.getElementById('zoomVal').innerText = zoomRange.value;
-      if(window.lastHistoryData) updateHistoryChart({ val: () => window.lastHistoryData });
-  });
-  
-  // ================= INIT =================
-
-  window.addEventListener('load', () => {
-      mkLine();
-  });
+    // Initial load for chart setup
+    mkLine();
+});
 </script>
 
 </body>
