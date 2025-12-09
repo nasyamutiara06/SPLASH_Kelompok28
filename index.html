@@ -41,131 +41,131 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;
 </head>
 <body>
 <div class='wrap'>
-  <div class='header'>
-    <img src='./DESPRO.png' alt='SPLASH' style='height:200px;margin-right:12px;'>
-  </div>
-  <div class='grid'>
-    <div class='left'>
-      <div class='card'>
-        <div style='display:flex;align-items:center;justify-content:space-between'>
-          <h2 style='margin:0'>Water Flow (Firebase)</h2>
-          <div style='font-size:14px;color:#666'>Last update: <span id='lastUpdate'>--:--:--</span></div>
-        </div>
+  <div class='header'>
+    <img src='./DESPRO.png' alt='SPLASH' style='height:200px;margin-right:12px;'>
+  </div>
+  <div class='grid'>
+    <div class='left'>
+      <div class='card'>
+        <div style='display:flex;align-items:center;justify-content:space-between'>
+          <h2 style='margin:0'>Water Flow (Firebase)</h2>
+          <div style='font-size:14px;color:#666'>Last update: <span id='lastUpdate'>--:--:--</span></div>
+        </div>
 
-                <div class='gauge-row' style='margin-top:12px'>
-          <div class='gauge' id='gauge1'>
-            <svg viewBox='0 0 220 120'>
-              <defs><linearGradient id='g1' x1='0' x2='1'><stop offset='0' stop-color='#8DE2A6'/><stop offset='0.6' stop-color='#F8C46C'/><stop offset='1' stop-color='#F06E6E'/></linearGradient></defs>
-              <path d='M20 100 A90 90 0 0 1 200 100' fill='none' stroke='#ddd' stroke-width='18' stroke-linecap='round'></path>
-              <path id='arc1' d='M20 100 A90 90 0 0 1 200 100' fill='none' stroke='url(#g1)' stroke-width='18' stroke-linecap='round' stroke-dasharray='0 565' stroke-linejoin='round'></path>
-              <line id='needle1' x1='110' y1='100' x2='110' y2='30' stroke='#58386a' stroke-width='6' stroke-linecap='round' transform='rotate(-90 110 100)'></line>
-              <circle cx='110' cy='100' r='8' fill='#58386a'></circle>
-            </svg>
-            <div class='percent' id='p1'>-- %</div>
-            <div class='percent' style='font-size:14px;color:#555' id='p1ml'>-- mL/s</div>
-          </div>
+                <div class='gauge-row' style='margin-top:12px'>
+          <div class='gauge' id='gauge1'>
+            <svg viewBox='0 0 220 120'>
+              <defs><linearGradient id='g1' x1='0' x2='1'><stop offset='0' stop-color='#8DE2A6'/><stop offset='0.6' stop-color='#F8C46C'/><stop offset='1' stop-color='#F06E6E'/></linearGradient></defs>
+              <path d='M20 100 A90 90 0 0 1 200 100' fill='none' stroke='#ddd' stroke-width='18' stroke-linecap='round'></path>
+              <path id='arc1' d='M20 100 A90 90 0 0 1 200 100' fill='none' stroke='url(#g1)' stroke-width='18' stroke-linecap='round' stroke-dasharray='0 565' stroke-linejoin='round'></path>
+              <line id='needle1' x1='110' y1='100' x2='110' y2='30' stroke='#58386a' stroke-width='6' stroke-linecap='round' transform='rotate(-90 110 100)'></line>
+              <circle cx='110' cy='100' r='8' fill='#58386a'></circle>
+            </svg>
+            <div class='percent' id='p1'>-- %</div>
+            <div class='percent' style='font-size:14px;color:#555' id='p1ml'>-- mL/s</div>
+          </div>
 
-          <div class='gauge' id='gauge2'>
-            <svg viewBox='0 0 220 120'>
-              <defs><linearGradient id='g2' x1='0' x2='1'><stop offset='0' stop-color='#8DE2A6'/><stop offset='0.6' stop-color='#F8C46C'/><stop offset='1' stop-color='#F06E6E'/></linearGradient></defs>
-              <path d='M20 100 A90 90 0 0 1 200 100' fill='none' stroke='#ddd' stroke-width='18' stroke-linecap='round'></path>
-              <path id='arc2' d='M20 100 A90 90 0 0 1 200 100' fill='none' stroke='url(#g2)' stroke-width='18' stroke-linecap='round' stroke-dasharray='0 565'></path>
-              <line id='needle2' x1='110' y1='100' x2='110' y2='30' stroke='#58386a' stroke-width='6' stroke-linecap='round' transform='rotate(-90 110 100)'></line>
-              <circle cx='110' cy='100' r='8' fill='#58386a'></circle>
-            </svg>
-            <div class='percent' id='p2'>-- %</div>
-            <div class='percent' style='font-size:14px;color:#555' id='p2ml'>-- mL/s</div>
-          </div>
-        </div>
+          <div class='gauge' id='gauge2'>
+            <svg viewBox='0 0 220 120'>
+              <defs><linearGradient id='g2' x1='0' x2='1'><stop offset='0' stop-color='#8DE2A6'/><stop offset='0.6' stop-color='#F8C46C'/><stop offset='1' stop-color='#F06E6E'/></linearGradient></defs>
+              <path d='M20 100 A90 90 0 0 1 200 100' fill='none' stroke='#ddd' stroke-width='18' stroke-linecap='round'></path>
+              <path id='arc2' d='M20 100 A90 90 0 0 1 200 100' fill='none' stroke='url(#g2)' stroke-width='18' stroke-linecap='round' stroke-dasharray='0 565'></path>
+              <line id='needle2' x1='110' y1='100' x2='110' y2='30' stroke='#58386a' stroke-width='6' stroke-linecap='round' transform='rotate(-90 110 100)'></line>
+              <circle cx='110' cy='100' r='8' fill='#58386a'></circle>
+            </svg>
+            <div class='percent' id='p2'>-- %</div>
+            <div class='percent' style='font-size:14px;color:#555' id='p2ml'>-- mL/s</div>
+          </div>
+        </div>
         
-                <div class='status' style='margin-top:14px'>
-          <div id='leakBadge' class='badge ok'>SYSTEM OK</div>
-          <div style='display:flex;justify-content:space-between;gap:20px;align-items:center'>
-            <div>
-              <div style='margin-bottom:8px;font-weight:700'>Water Pump</div>
-              <div style='margin-bottom:8px;font-weight:700'>Solenoid Valve</div>
-            </div>
-            <div style='text-align:right'>
-              <div id='pumpLabel' class='indicator off'>-</div>
-              <div id='valveLabel' class='indicator off' style='margin-top:8px'>-</div>
-            </div>
-          </div>
+                <div class='status' style='margin-top:14px'>
+          <div id='leakBadge' class='badge ok'>SYSTEM OK</div>
+          <div style='display:flex;justify-content:space-between;gap:20px;align-items:center'>
+            <div>
+              <div style='margin-bottom:8px;font-weight:700'>Water Pump</div>
+              <div style='margin-bottom:8px;font-weight:700'>Solenoid Valve</div>
+            </div>
+            <div style='text-align:right'>
+              <div id='pumpLabel' class='indicator off'>-</div>
+              <div id='valveLabel' class='indicator off' style='margin-top:8px'>-</div>
+            </div>
+          </div>
 
-          <div class='ctrl' id='valveCtrlContainer'>
-            <div style='font-weight:700; color:#333; margin-right:10px'>Valve Manual Control:</div>
-            <button id='openValveBtn' class='btn on' style='background:#19a974; width:120px'>Open / Reset</button>
-            <button id='closeValveBtn' class='btn off' style='width:120px'>Close</button>
-          </div>
+          <div class='ctrl' id='valveCtrlContainer'>
+            <div style='font-weight:700; color:#333; margin-right:10px'>Valve Manual Control:</div>
+            <button id='openValveBtn' class='btn on' style='background:#19a974; width:120px'>Open / Reset</button>
+            <button id='closeValveBtn' class='btn off' style='width:120px'>Close</button>
+          </div>
 
-          <div class='ctrl'>
-            <button id='toggleBtn' class='btn off'>Turn Pump ON</button>
-            <div style='font-size:12px;color:#666'>You can click the button or toggle from physical controller</div>
-          </div>
-        </div>
-      </div>
+          <div class='ctrl'>
+            <button id='toggleBtn' class='btn off'>Turn Pump ON</button>
+            <div style='font-size:12px;color:#666'>You can click the button or toggle from physical controller</div>
+          </div>
+        </div>
+      </div>
 
-      <div class='card'>
-        <h3 style='margin:0 0 8px 0'>Status & Logs</h3>
-        <div id='logArea' class='logs'></div>
-      </div>
-    </div>
+      <div class='card'>
+        <h3 style='margin:0 0 8px 0'>Status & Logs</h3>
+        <div id='logArea' class='logs'></div>
+      </div>
+    </div>
 
-        <div class='chart-card'>
-      <div style='display:flex;align-items:center;justify-content:space-between'>
-        <h3 style='margin:0'>Data</h3>
-        <div style='display:flex;align-items:center;gap:6px'>
-          <button id='dlCsvPct' class='download'>Download CSV</button>
-          <button id='dlPngPct' class='download'>Download PNG</button>
-        </div>
-      </div>
+        <div class='chart-card'>
+      <div style='display:flex;align-items:center;justify-content:space-between'>
+        <h3 style='margin:0'>Data</h3>
+        <div style='display:flex;align-items:center;gap:6px'>
+          <button id='dlCsvPct' class='download'>Download CSV</button>
+          <button id='dlPngPct' class='download'>Download PNG</button>
+        </div>
+      </div>
 
-      <div class='zoomRow'>
-        <label for='zoomRange'>Show last</label>
-        <input id='zoomRange' type='range' min='5' max='100' value='30' step='1' />
-        <span id='zoomVal'>30</span>data
-        <div style='font-size:12px;color:#666;margin-left:10px'>(Data Per Sampel)</div>
-      </div>
+      <div class='zoomRow'>
+        <label for='zoomRange'>Show last</label>
+        <input id='zoomRange' type='range' min='5' max='100' value='30' step='1' />
+        <span id='zoomVal'>30</span>data
+        <div style='font-size:12px;color:#666;margin-left:10px'>(Data Per Sampel)</div>
+      </div>
 
-      <div class='chart-nav' style='display:flex;align-items:center;justify-content:space-between;margin-top:8px'>
-        <button id='prevBtn' class='btn off' style='padding:6px 10px'>&larr; Prev</button>
-        <span id='dataRangeInfo' style='font-size:12px'>Showing data -- of --</span>
-        <button id='nextBtn' class='btn off' style='padding:6px 10px'>Next &rarr;</button>
-        </div>
-      <div style='margin-top:8px;font-weight:600;'>Flow (%)</div>
-      <canvas id='lineChart' style='width:100%;height:320px;margin-top:4px;'></canvas>
+      <div class='chart-nav' style='display:flex;align-items:center;justify-content:space-between;margin-top:8px'>
+        <button id='prevBtn' class='btn off' style='padding:6px 10px'>&larr; Prev</button>
+        <span id='dataRangeInfo' style='font-size:12px'>Showing data -- of --</span>
+        <button id='nextBtn' class='btn off' style='padding:6px 10px'>Next &rarr;</button>
+        </div>
+      <div style='margin-top:8px;font-weight:600;'>Flow (%)</div>
+      <canvas id='lineChart' style='width:100%;height:320px;margin-top:4px;'></canvas>
 
-      <div style='margin-top:12px;font-weight:600;display:flex;justify-content:space-between;align-items:center;'>
-        Flow (mL/s)
-        <div>
-          <button id='dlCsvMlps' class='download' style='font-size:12px;padding:6px 10px;'>Download CSV</button>
-          <button id='dlPngMlps' class='download' style='font-size:12px;padding:6px 10px;'>Download PNG</button>
-        </div>
-      </div>
-      <canvas id='lineChartMlps' style='width:100%;height:320px;margin-top:4px;'></canvas>
+      <div style='margin-top:12px;font-weight:600;display:flex;justify-content:space-between;align-items:center;'>
+        Flow (mL/s)
+        <div>
+          <button id='dlCsvMlps' class='download' style='font-size:12px;padding:6px 10px;'>Download CSV</button>
+          <button id='dlPngMlps' class='download' style='font-size:12px;padding:6px 10px;'>Download PNG</button>
+        </div>
+      </div>
+      <canvas id='lineChartMlps' style='width:100%;height:320px;margin-top:4px;'></canvas>
 
-            <div style='margin-top:16px;'>
-        <img id='imgOk' src='./OKEY.png' alt='Pipeline OK'
-             style='width:100%;max-height:220px;object-fit:contain;border-radius:12px;
-                    background:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.06);'>
-        <img id='imgLeak' src='./BOCOR.png' alt='Pipeline leak'
-             style='width:100%;max-height:220px;object-fit:contain;border-radius:12px;
-                    background:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.06);display:none;'>
-      </div>
-    </div>
-  </div>
+            <div style='margin-top:16px;'>
+        <img id='imgOk' src='./OKEY.png' alt='Pipeline OK'
+             style='width:100%;max-height:220px;object-fit:contain;border-radius:12px;
+                    background:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.06);'>
+        <img id='imgLeak' src='./BOCOR.png' alt='Pipeline leak'
+             style='width:100%;max-height:220px;object-fit:contain;border-radius:12px;
+                    background:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.06);display:none;'>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
 // 🚨 GANTI DENGAN KONFIGURASI WEB APP FIREBASE ANDA 🚨
 // Ambil konfigurasi ini dari Firebase Console -> Project settings -> Web App
 const firebaseConfig = {
-  apiKey: "YOUR_FIREBASE_CONFIG_API_KEY", 
-  authDomain: "YOUR_FIREBASE_CONFIG_AUTH_DOMAIN",
-  databaseURL: "https://splash-kelompok28-default-rtdb.asia-southeast1.firebasedatabase.app/", // Sudah di-set sesuai permintaan
-  projectId: "YOUR_FIREBASE_CONFIG_PROJECT_ID",
-  storageBucket: "YOUR_FIREBASE_CONFIG_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_FIREBASE_CONFIG_MESSAGING_SENDER_ID",
-  appId: "YOUR_FIREBASE_CONFIG_APP_ID"
+  apiKey: "YOUR_FIREBASE_CONFIG_API_KEY", 
+  authDomain: "YOUR_FIREBASE_CONFIG_AUTH_DOMAIN",
+  databaseURL: "https://splash-kelompok28-default-rtdb.asia-southeast1.firebasedatabase.app/", // Sudah di-set sesuai permintaan
+  projectId: "YOUR_FIREBASE_CONFIG_PROJECT_ID",
+  storageBucket: "YOUR_FIREBASE_CONFIG_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_FIREBASE_CONFIG_MESSAGING_SENDER_ID",
+  appId: "YOUR_FIREBASE_CONFIG_APP_ID"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -184,194 +184,194 @@ let historyArray = [];
 
 // Fungsi mkLine, setGauge, appendLog (Sama)
 const mkLine=()=>{
-  const ctx=document.getElementById('lineChart').getContext('2d');
-  lineChart=new Chart(ctx,{
-    type:'line',
-    data:{labels:[],datasets:[
-      {label:'Water Flow 1 (%)',borderColor:'#19a974',pointRadius:4,backgroundColor:'transparent',data:[]},
-      {label:'Water Flow 2 (%)',borderColor:'#e74c3c',pointRadius:4,backgroundColor:'transparent',data:[]}
-    ]},
-    options:{animation:{duration:200},scales:{y:{min:0,max:100}},plugins:{legend:{position:'top'}}}
-  });
-  const ctx2=document.getElementById('lineChartMlps').getContext('2d');
-  lineChartMlps=new Chart(ctx2,{
-    type:'line',
-    data:{labels:[],datasets:[
-      {label:'Water Flow 1 (mL/s)',borderColor:'#19a974',pointRadius:4,backgroundColor:'transparent',data:[]},
-      {label:'Water Flow 2 (mL/s)',borderColor:'#e74c3c',pointRadius:4,backgroundColor:'transparent',data:[]}
-    ]},
-    options:{animation:{duration:200},scales:{y:{min:0,max:MLPS_MAX}},plugins:{legend:{position:'top'}}}
-  });
+  const ctx=document.getElementById('lineChart').getContext('2d');
+  lineChart=new Chart(ctx,{
+    type:'line',
+    data:{labels:[],datasets:[
+      {label:'Water Flow 1 (%)',borderColor:'#19a974',pointRadius:4,backgroundColor:'transparent',data:[]},
+      {label:'Water Flow 2 (%)',borderColor:'#e74c3c',pointRadius:4,backgroundColor:'transparent',data:[]}
+    ]},
+    options:{animation:{duration:200},scales:{y:{min:0,max:100}},plugins:{legend:{position:'top'}}}
+  });
+  const ctx2=document.getElementById('lineChartMlps').getContext('2d');
+  lineChartMlps=new Chart(ctx2,{
+    type:'line',
+    data:{labels:[],datasets:[
+      {label:'Water Flow 1 (mL/s)',borderColor:'#19a974',pointRadius:4,backgroundColor:'transparent',data:[]},
+      {label:'Water Flow 2 (mL/s)',borderColor:'#e74c3c',pointRadius:4,backgroundColor:'transparent',data:[]}
+    ]},
+    options:{animation:{duration:200},scales:{y:{min:0,max:MLPS_MAX}},plugins:{legend:{position:'top'}}}
+  });
 };
 
 const setGauge=(id, v)=>{
-  v=Math.max(0,Math.min(100,Math.round(v)));
-  const pct = v/100;
-  const dash = Math.round(565 * pct);
-  const mlps = pctToMlps(v);
+  v=Math.max(0,Math.min(100,Math.round(v)));
+  const pct = v/100;
+  const dash = Math.round(565 * pct);
+  const mlps = pctToMlps(v);
 
-  if(id==='g1'){
-    document.getElementById('arc1').setAttribute('stroke-dasharray', dash+' 565');
-    const angle = -90 + (v/100)*180;
-    document.getElementById('needle1').setAttribute('transform','rotate('+angle+' 110 100)');
-    document.getElementById('p1').innerText = v + ' %';
-    document.getElementById('p1ml').innerText = mlps.toFixed(1) + ' mL/s';
-  } else {
-    document.getElementById('arc2').setAttribute('stroke-dasharray', dash+' 565');
-    const angle = -90 + (v/100)*180;
-    document.getElementById('needle2').setAttribute('transform','rotate('+angle+' 110 100)');
-    document.getElementById('p2').innerText = v + ' %';
-    document.getElementById('p2ml').innerText = mlps.toFixed(1) + ' mL/s';
-  }
+  if(id==='g1'){
+    document.getElementById('arc1').setAttribute('stroke-dasharray', dash+' 565');
+    const angle = -90 + (v/100)*180;
+    document.getElementById('needle1').setAttribute('transform','rotate('+angle+' 110 100)');
+    document.getElementById('p1').innerText = v + ' %';
+    document.getElementById('p1ml').innerText = mlps.toFixed(1) + ' mL/s';
+  } else {
+    document.getElementById('arc2').setAttribute('stroke-dasharray', dash+' 565');
+    const angle = -90 + (v/100)*180;
+    document.getElementById('needle2').setAttribute('transform','rotate('+angle+' 110 100)');
+    document.getElementById('p2').innerText = v + ' %';
+    document.getElementById('p2ml').innerText = mlps.toFixed(1) + ' mL/s';
+  }
 };
 
 const appendLog=(s)=>{
-  const la=document.getElementById('logArea');
-  const now=new Date().toLocaleTimeString();
-  la.innerHTML = '['+now+'] '+s + '<br>' + la.innerHTML;
+  const la=document.getElementById('logArea');
+  const now=new Date().toLocaleTimeString();
+  la.innerHTML = '['+now+'] '+s + '<br>' + la.innerHTML;
 };
 
 // Fungsi untuk update UI dari data real-time Firebase
 const updateUI=(j)=>{
-  if (!j) return;
-  lastData=j;
-  const f1=j.flow1, f2=j.flow2;
-  setGauge('g1', f1);
-  setGauge('g2', f2);
+  if (!j) return;
+  lastData=j;
+  const f1=j.flow1, f2=j.flow2;
+  setGauge('g1', f1);
+  setGauge('g2', f2);
 
-  const pumpEl = document.getElementById('pumpLabel');
-  pumpEl.innerText = j.pump? 'ON' : 'OFF';
-  pumpEl.className = 'indicator ' + (j.pump? 'on':'off');
+  const pumpEl = document.getElementById('pumpLabel');
+  pumpEl.innerText = j.pump? 'ON' : 'OFF';
+  pumpEl.className = 'indicator ' + (j.pump? 'on':'off');
 
-  const valveEl = document.getElementById('valveLabel');
-  valveEl.innerText = j.valve? 'OPEN' : 'CLOSED';
+  const valveEl = document.getElementById('valveLabel');
+  valveEl.innerText = j.valve? 'OPEN' : 'CLOSED';
 
-  const leak = j.leakLockout || false;
+  const leak = j.leakLockout || false;
 
-  if(leak){
-    document.getElementById('leakBadge').className='badge danger';
-    document.getElementById('leakBadge').innerText='WATER LEAKAGE DETECTED! (LOCKED)';
-    valveEl.className = 'indicator off'; 
-  } else {
-    document.getElementById('leakBadge').className='badge ok';
-    document.getElementById('leakBadge').innerText='SYSTEM OK';
-    valveEl.className = 'indicator ' + (j.valve? 'on':'off');
-  }
+  if(leak){
+    document.getElementById('leakBadge').className='badge danger';
+    document.getElementById('leakBadge').innerText='WATER LEAKAGE DETECTED! (LOCKED)';
+    valveEl.className = 'indicator off'; 
+  } else {
+    document.getElementById('leakBadge').className='badge ok';
+    document.getElementById('leakBadge').innerText='SYSTEM OK';
+    valveEl.className = 'indicator ' + (j.valve? 'on':'off');
+  }
 
-  // Gambar: show/hide
-  const imgOk   = document.getElementById('imgOk');
-  const imgLeak = document.getElementById('imgLeak');
-  if (imgOk && imgLeak) {
-    if (leak) {
-      imgOk.style.display   = 'none';
-      imgLeak.style.display = 'block';
-    } else {
-      imgOk.style.display   = 'block';
-      imgLeak.style.display = 'none';
-    }
-  }
+  // Gambar: show/hide
+  const imgOk   = document.getElementById('imgOk');
+  const imgLeak = document.getElementById('imgLeak');
+  if (imgOk && imgLeak) {
+    if (leak) {
+      imgOk.style.display   = 'none';
+      imgLeak.style.display = 'block';
+    } else {
+      imgOk.style.display   = 'block';
+      imgLeak.style.display = 'none';
+    }
+  }
 
-  const ml1 = pctToMlps(f1).toFixed(1);
-  const ml2 = pctToMlps(f2).toFixed(1);
-  appendLog(
-    'updated: f1='+f1+'% ('+ml1+' mL/s) '+
-    'f2='+f2+'% ('+ml2+' mL/s) '+
-    'pump='+j.pump+' valve='+j.valve + (leak ? ' (LEAK LOCK)' : '')
-  );
+  const ml1 = pctToMlps(f1).toFixed(1);
+  const ml2 = pctToMlps(f2).toFixed(1);
+  appendLog(
+    'updated: f1='+f1+'% ('+ml1+' mL/s) '+
+    'f2='+f2+'% ('+ml2+' mL/s) '+
+    'pump='+j.pump+' valve='+j.valve + (leak ? ' (LEAK LOCK)' : '')
+  );
 
-  document.getElementById('lastUpdate').innerText = new Date().toLocaleTimeString();
-  const btn=document.getElementById('toggleBtn');
-  btn.className = 'btn ' + (j.pump? 'on':'off');
-  btn.innerText = j.pump? 'Turn Pump OFF' : 'Turn Pump ON';
+  document.getElementById('lastUpdate').innerText = new Date().toLocaleTimeString();
+  const btn=document.getElementById('toggleBtn');
+  btn.className = 'btn ' + (j.pump? 'on':'off');
+  btn.innerText = j.pump? 'Turn Pump OFF' : 'Turn Pump ON';
 };
 
 
 // Fungsi untuk update chart dari data historyArray
 const updateChartSeries=()=>{
-  if(!lineChart || !lineChartMlps || historyArray.length === 0) return;
+  if(!lineChart || !lineChartMlps || historyArray.length === 0) return;
 
-  let arr = historyArray.slice(); 
-  
-  const totalSamples = arr.length;
-  const displaySize = parseInt(document.getElementById('zoomRange').value || '30');
+  let arr = historyArray.slice(); 
+  
+  const totalSamples = arr.length;
+  const displaySize = parseInt(document.getElementById('zoomRange').value || '30');
 
-  if(dataOffset < 0) dataOffset = 0;
-  if(dataOffset > totalSamples - displaySize) {
-    dataOffset = Math.max(0, totalSamples - displaySize);
-  }
-  
-  // Logika Navigasi
-  document.getElementById('nextBtn').disabled = dataOffset === 0;
-  document.getElementById('prevBtn').disabled = (totalSamples <= displaySize) || (dataOffset >= totalSamples - displaySize);
+  if(dataOffset < 0) dataOffset = 0;
+  if(dataOffset > totalSamples - displaySize) {
+    dataOffset = Math.max(0, totalSamples - displaySize);
+  }
+  
+  // Logika Navigasi
+  document.getElementById('nextBtn').disabled = dataOffset === 0;
+  document.getElementById('prevBtn').disabled = (totalSamples <= displaySize) || (dataOffset >= totalSamples - displaySize);
 
-  const endIndex = totalSamples - dataOffset;
-  const startIndex = totalSamples - displaySize - dataOffset;
-  const displayArr = arr.slice(Math.max(0, startIndex), endIndex);
+  const endIndex = totalSamples - dataOffset;
+  const startIndex = totalSamples - displaySize - dataOffset;
+  const displayArr = arr.slice(Math.max(0, startIndex), endIndex);
 
-  const startIdxDisp = Math.max(0, startIndex) + 1;
-  const endIdxDisp = endIndex > totalSamples ? totalSamples : endIndex;
-  document.getElementById('dataRangeInfo').innerText = 
-    `Showing data ${startIdxDisp} to ${endIdxDisp} of ${totalSamples}`;
-  
-  let labels=[], d1=[], d2=[], m1=[], m2=[];
-  
-  displayArr.forEach(p=>{
-    labels.push(new Date(p.tms).toLocaleTimeString());
-    d1.push(p.f1);
-    d2.push(p.f2);
-    m1.push(pctToMlps(p.f1));
-    m2.push(pctToMlps(p.f2));
-  });
+  const startIdxDisp = Math.max(0, startIndex) + 1;
+  const endIdxDisp = endIndex > totalSamples ? totalSamples : endIndex;
+  document.getElementById('dataRangeInfo').innerText = 
+    `Showing data ${startIdxDisp} to ${endIdxDisp} of ${totalSamples}`;
+  
+  let labels=[], d1=[], d2=[], m1=[], m2=[];
+  
+  displayArr.forEach(p=>{
+    labels.push(new Date(p.tms).toLocaleTimeString());
+    d1.push(p.f1);
+    d2.push(p.f2);
+    m1.push(pctToMlps(p.f1));
+    m2.push(pctToMlps(p.f2));
+  });
 
-  lineChart.data.labels = labels;
-  lineChart.data.datasets[0].data = d1;
-  lineChart.data.datasets[1].data = d2;
-  lineChart.update();
+  lineChart.data.labels = labels;
+  lineChart.data.datasets[0].data = d1;
+  lineChart.data.datasets[1].data = d2;
+  lineChart.update();
 
-  lineChartMlps.data.labels = labels;
-  lineChartMlps.data.datasets[0].data = m1;
-  lineChartMlps.data.datasets[1].data = m2;
-  lineChartMlps.update();
+  lineChartMlps.data.labels = labels;
+  lineChartMlps.data.datasets[0].data = m1;
+  lineChartMlps.data.datasets[1].data = m2;
+  lineChartMlps.update();
 };
 
 // LISTENERS FIREBASE
 dbRefRealtime.on('value', (snapshot) => {
-  const data = snapshot.val();
-  updateUI(data);
+  const data = snapshot.val();
+  updateUI(data);
 }, (error) => {
-  console.error("Error reading realtime data:", error);
-  appendLog("Error reading realtime data from Firebase!");
+  console.error("Error reading realtime data:", error);
+  appendLog("Error reading realtime data from Firebase!");
 });
 
 dbRefHistory.orderByChild('tms').limitToLast(100).on('value', (snapshot) => {
-  // Mengambil 100 data terakhir dari history
-  historyArray = [];
-  snapshot.forEach((childSnapshot) => {
-    historyArray.push(childSnapshot.val());
-  });
-  historyArray.sort((a, b) => a.tms - b.tms); 
-  updateChartSeries();
+  // Mengambil 100 data terakhir dari history
+  historyArray = [];
+  snapshot.forEach((childSnapshot) => {
+    historyArray.push(childSnapshot.val());
+  });
+  historyArray.sort((a, b) => a.tms - b.tms); 
+  updateChartSeries();
 }, (error) => {
-  console.error("Error reading history data:", error);
+  console.error("Error reading history data:", error);
 });
 
 
 // EVENT LISTENERS DOM (Kontrol melalui Firebase Write)
 document.addEventListener('click', async (ev)=>{
-  if(ev.target && ev.target.id==='toggleBtn'){
-    const currentPumpState = lastData ? lastData.pump : false;
-    await dbRefControl.child('pumpToggle').set(!currentPumpState);
-  }
-  if(ev.target && ev.target.id==='openValveBtn'){
-    if(confirm("MEMBUKA KATUP MANUAL: Ini akan mereset status Lockout Kebocoran dan menjalankan Startup Delay (7s). Lanjutkan?")){
-      await dbRefControl.child('valveControl').set('open');
-    }
-  }
-  if(ev.target && ev.target.id==='closeValveBtn'){
-    if(confirm("MENUTUP KATUP MANUAL: Ini akan mengaktifkan Leak Lockout. Lanjutkan?")){
-      await dbRefControl.child('valveControl').set('close');
-    }
-  }
+  if(ev.target && ev.target.id==='toggleBtn'){
+    const currentPumpState = lastData ? lastData.pump : false;
+    await dbRefControl.child('pumpToggle').set(!currentPumpState);
+  }
+  if(ev.target && ev.target.id==='openValveBtn'){
+    if(confirm("MEMBUKA KATUP MANUAL: Ini akan mereset status Lockout Kebocoran dan menjalankan Startup Delay (7s). Lanjutkan?")){
+      await dbRefControl.child('valveControl').set('open');
+    }
+  }
+  if(ev.target && ev.target.id==='closeValveBtn'){
+    if(confirm("MENUTUP KATUP MANUAL: Ini akan mengaktifkan Leak Lockout. Lanjutkan?")){
+      await dbRefControl.child('valveControl').set('close');
+    }
+  }
 });
 
 // FUNCTIONS Chart Control & Download (Sama)
@@ -384,68 +384,69 @@ document.getElementById('dlCsvMlps').addEventListener('click', ()=>{ downloadCsv
 document.getElementById('dlPngMlps').addEventListener('click', ()=>{ downloadPng(lineChartMlps); });
 
 const downloadCsv = (type) => {
-  if(historyArray.length === 0) return alert('No data');
-  
-  let csv = 'tms,iso,flow1_pct,flow2_pct,flow1_mlps,flow2_mlps\n';
-  historyArray.forEach(r=>{
-    const ml1 = pctToMlps(r.f1);
-    const ml2 = pctToMlps(r.f2);
-    csv += r.tms + ','
-        + (new Date(r.tms)).toISOString() + ','
-        + r.f1 + ','
-        + r.f2 + ','
-        + ml1.toFixed(3) + ','
-        + ml2.toFixed(3) + '\n';
-  });
+  if(historyArray.length === 0) return alert('No data');
+  
+  let csv = 'tms,iso,flow1_pct,flow2_pct,flow1_mlps,flow2_mlps\n';
+  historyArray.forEach(r=>{
+    const ml1 = pctToMlps(r.f1);
+    const ml2 = pctToMlps(r.f2);
+    csv += r.tms + ','
+        + (new Date(r.tms)).toISOString() + ','
+        + r.f1 + ','
+        + r.f2 + ','
+        + ml1.toFixed(3) + ','
+        + ml2.toFixed(3) + '\n';
+  });
 
-  const blob = new Blob([csv], {type:'text/csv'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url;
-  a.download = 'splash_data_per_sample_'+type+'.csv'; a.click(); URL.revokeObjectURL(url);
+  const blob = new Blob([csv], {type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url;
+  a.download = 'splash_data_per_sample_'+type+'.csv'; a.click(); URL.revokeObjectURL(url);
 };
 
 const downloadPng = (chart) => {
-  if(!chart) return;
-  try{
-    const imgSrc = chart.toBase64Image();
-    const img = new Image();
-    img.onload = ()=>{
-      const W = 1600, H = 900;
-      const cv = document.createElement('canvas');
-      cv.width = W; cv.height = H;
-      const ctx = cv.getContext('2d');
-      ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,W,H);
-      ctx.drawImage(img, 0, 0, W, H);
-      const url = cv.toDataURL('image/png');
-      const a = document.createElement('a'); a.href = url;
-      const type = chart.canvas.id === 'lineChart' ? 'pct' : 'mlps';
-      a.download = 'splash_chart_'+type+'.png'; a.click();
-    };
-    img.src = imgSrc;
-  }catch(e){ console.error(e); alert('Export failed'); }
+  if(!chart) return;
+  try{
+    const imgSrc = chart.toBase64Image();
+    const img = new Image();
+    img.onload = ()=>{
+      const W = 1600, H = 900;
+      const cv = document.createElement('canvas');
+      cv.width = W; cv.height = H;
+      const ctx = cv.getContext('2d');
+      ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,W,H);
+      ctx.drawImage(img, 0, 0, W, H);
+      const url = cv.toDataURL('image/png');
+      const a = document.createElement('a'); a.href = url;
+      const type = chart.canvas.id === 'lineChart' ? 'pct' : 'mlps';
+      a.download = 'splash_chart_'+type+'.png'; a.click();
+    };
+    img.src = imgSrc;
+  }catch(e){ console.error(e); alert('Export failed'); }
 };
 
 document.getElementById('prevBtn').addEventListener('click', ()=>{
-  const step = parseInt(document.getElementById('zoomRange').value || '30');
-  dataOffset += step;
-  updateChartSeries();
+  const step = parseInt(document.getElementById('zoomRange').value || '30');
+  dataOffset += step;
+  updateChartSeries();
 });
 
 document.getElementById('nextBtn').addEventListener('click', ()=>{
-  const step = parseInt(document.getElementById('zoomRange').value || '30');
-  dataOffset -= step;
-  updateChartSeries();
+  const step = parseInt(document.getElementById('zoomRange').value || '30');
+  dataOffset -= step;
+  updateChartSeries();
 });
 
 zoomRange.addEventListener('input', ()=>{
-  zoomVal.innerText = zoomRange.value;
-  dataOffset = 0;
-  updateChartSeries();
+  zoomVal.innerText = zoomRange.value;
+  dataOffset = 0;
+  updateChartSeries();
 });
 
 window.addEventListener('load', ()=>{
-  mkLine();
+  mkLine();
 });
 </script>
 </body>
 </html>
+
