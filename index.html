@@ -5,7 +5,7 @@
 <meta name='viewport' content='width=device-width,initial-scale=1' />
 <title>Splash - Flow Dashboard (Firebase)</title>
 <style>
-/* STYLE CSS TETAP SAMA */
+/* ... (Bagian Style CSS tetap sama) ... */
 :root{--bg:#f4fafc;--card:#eaf9ff;--accent:#1e6fb8;--ok:#19a974;--danger:#e03b3b}
 body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;padding:18px}
 .wrap{max-width:1200px;margin:auto}
@@ -35,7 +35,7 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;
 @media(max-width:900px){.grid{grid-template-columns:1fr;}.gauge{width:100%}}
 </style>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<script src='https://cdn.jsdelivr.net/npm/chart.js'></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 </head>
@@ -173,6 +173,7 @@ const dbRefRealtime = db.ref('realtime');
 const dbRefHistory = db.ref('history');
 const dbRefControl = db.ref('control');
 
+
 let lineChart, lineChartMlps, lastData=null;
 const MAX_FLOW_LPM = 30.0;
 const MLPS_MAX = MAX_FLOW_LPM * 1000.0 / 60.0;
@@ -180,104 +181,28 @@ const pctToMlps = (pct)=> (pct/100.0) * MLPS_MAX;
 let dataOffset = 0;
 let historyArray = []; 
 
-// --- FUNGSI FORMAT WAKTU BARU (Mengatasi data lama yang jam 7 pagi) ---
-const formatTime = (timestamp) => {
-    // Cek jika timestamp terlalu kecil (data sebelum sinkronisasi NTP)
-    // Angka ini kira-kira tahun 2020 dalam milidetik
-    if (!timestamp || timestamp < 1600000000000) { 
-        return 'N/A'; // Tandai data lama
-    }
-    const date = new Date(timestamp);
-    // Format HH:mm:ss
-    return date.toLocaleTimeString([], { hour12: false }); 
-};
-
-// ----- PERBAIKAN GRAFIK: Konfigurasi Chart.js agar BERGARIS -----
+// Fungsi mkLine, setGauge, appendLog (Sama)
 const mkLine=()=>{
-  // --- Konfigurasi Grafik Persentase ---
   const ctx=document.getElementById('lineChart').getContext('2d');
   lineChart=new Chart(ctx,{
     type:'line',
-    data:{
-        labels:[],
-        datasets:[
-          {
-            label:'Water Flow 1 (%)',
-            borderColor:'#19a974',
-            backgroundColor: 'rgba(25, 169, 116, 0.1)', // Warna isi transparan
-            pointRadius: 3,         // Ukuran titik
-            borderWidth: 2,         // Ketebalan garis (INI YANG MEMBUAT GARIS MUNCUL)
-            tension: 0.3,           // Kelengkungan garis
-            fill: true,             // Isi area di bawah garis
-            data:[]
-          },
-          {
-            label:'Water Flow 2 (%)',
-            borderColor:'#e74c3c',
-            backgroundColor: 'rgba(231, 76, 60, 0.1)',
-            pointRadius: 3,
-            borderWidth: 2,
-            tension: 0.3,
-            fill: true,
-            data:[]
-          }
-        ]
-    },
-    options:{
-        responsive: true,
-        maintainAspectRatio: false,
-        animation:{duration:0}, // Matikan animasi agar responsif
-        scales:{
-            y:{min:0,max:100, title: {display: true, text: 'Persentase (%)'}},
-            x:{title: {display: true, text: 'Waktu'}}
-        },
-        plugins:{legend:{position:'top'}}
-    }
+    data:{labels:[],datasets:[
+      {label:'Water Flow 1 (%)',borderColor:'#19a974',pointRadius:4,backgroundColor:'transparent',data:[]},
+      {label:'Water Flow 2 (%)',borderColor:'#e74c3c',pointRadius:4,backgroundColor:'transparent',data:[]}
+    ]},
+    options:{animation:{duration:200},scales:{y:{min:0,max:100}},plugins:{legend:{position:'top'}}}
   });
-
-  // --- Konfigurasi Grafik mL/s ---
   const ctx2=document.getElementById('lineChartMlps').getContext('2d');
   lineChartMlps=new Chart(ctx2,{
     type:'line',
-    data:{
-        labels:[],
-        datasets:[
-          {
-            label:'Water Flow 1 (mL/s)',
-            borderColor:'#19a974',
-            backgroundColor: 'rgba(25, 169, 116, 0.1)',
-            pointRadius: 3,
-            borderWidth: 2,
-            tension: 0.3,
-            fill: true,
-            data:[]
-          },
-          {
-            label:'Water Flow 2 (mL/s)',
-            borderColor:'#e74c3c',
-            backgroundColor: 'rgba(231, 76, 60, 0.1)',
-            pointRadius: 3,
-            borderWidth: 2,
-            tension: 0.3,
-            fill: true,
-            data:[]
-          }
-        ]
-    },
-    options:{
-        responsive: true,
-        maintainAspectRatio: false,
-        animation:{duration:0},
-        scales:{
-            y:{min:0,max:MLPS_MAX, title: {display: true, text: 'Debit (mL/s)'}},
-            x:{title: {display: true, text: 'Waktu'}}
-        },
-        plugins:{legend:{position:'top'}}
-    }
+    data:{labels:[],datasets:[
+      {label:'Water Flow 1 (mL/s)',borderColor:'#19a974',pointRadius:4,backgroundColor:'transparent',data:[]},
+      {label:'Water Flow 2 (mL/s)',borderColor:'#e74c3c',pointRadius:4,backgroundColor:'transparent',data:[]}
+    ]},
+    options:{animation:{duration:200},scales:{y:{min:0,max:MLPS_MAX}},plugins:{legend:{position:'top'}}}
   });
 };
 
-// ... (Fungsi setGauge, appendLog, updateUI TETAP SAMA) ...
 const setGauge=(id, v)=>{
   v=Math.max(0,Math.min(100,Math.round(v)));
   const pct = v/100;
@@ -305,6 +230,7 @@ const appendLog=(s)=>{
   la.innerHTML = '['+now+'] '+s + '<br>' + la.innerHTML;
 };
 
+// Fungsi untuk update UI dari data real-time Firebase
 const updateUI=(j)=>{
   if (!j) return;
   lastData=j;
@@ -331,6 +257,7 @@ const updateUI=(j)=>{
     valveEl.className = 'indicator ' + (j.valve? 'on':'off');
   }
 
+  // Gambar: show/hide
   const imgOk   = document.getElementById('imgOk');
   const imgLeak = document.getElementById('imgLeak');
   if (imgOk && imgLeak) {
@@ -358,7 +285,7 @@ const updateUI=(j)=>{
 };
 
 
-// ----- PERBAIKAN UPDATE CHART: Menggunakan fungsi formatTime baru -----
+// Fungsi untuk update chart dari data historyArray
 const updateChartSeries=()=>{
   if(!lineChart || !lineChartMlps || historyArray.length === 0) return;
 
@@ -372,6 +299,7 @@ const updateChartSeries=()=>{
     dataOffset = Math.max(0, totalSamples - displaySize);
   }
   
+  // Logika Navigasi
   document.getElementById('nextBtn').disabled = dataOffset === 0;
   document.getElementById('prevBtn').disabled = (totalSamples <= displaySize) || (dataOffset >= totalSamples - displaySize);
 
@@ -387,8 +315,7 @@ const updateChartSeries=()=>{
   let labels=[], d1=[], d2=[], m1=[], m2=[];
   
   displayArr.forEach(p=>{
-    // --- GUNAKAN FUNGSI FORMAT WAKTU DI SINI ---
-    labels.push(formatTime(p.tms)); 
+    labels.push(new Date(p.tms).toLocaleTimeString());
     d1.push(p.f1);
     d2.push(p.f2);
     m1.push(pctToMlps(p.f1));
@@ -406,7 +333,7 @@ const updateChartSeries=()=>{
   lineChartMlps.update();
 };
 
-// ... (SISA EVENT LISTENERS DAN FUNGSI DOWNLOAD TETAP SAMA) ...
+// LISTENERS FIREBASE
 dbRefRealtime.on('value', (snapshot) => {
   const data = snapshot.val();
   updateUI(data);
@@ -416,6 +343,7 @@ dbRefRealtime.on('value', (snapshot) => {
 });
 
 dbRefHistory.orderByChild('tms').limitToLast(100).on('value', (snapshot) => {
+  // Mengambil 100 data terakhir dari history
   historyArray = [];
   snapshot.forEach((childSnapshot) => {
     historyArray.push(childSnapshot.val());
@@ -426,6 +354,8 @@ dbRefHistory.orderByChild('tms').limitToLast(100).on('value', (snapshot) => {
   console.error("Error reading history data:", error);
 });
 
+
+// EVENT LISTENERS DOM (Kontrol melalui Firebase Write)
 document.addEventListener('click', async (ev)=>{
   if(ev.target && ev.target.id==='toggleBtn'){
     const currentPumpState = lastData ? lastData.pump : false;
@@ -443,6 +373,7 @@ document.addEventListener('click', async (ev)=>{
   }
 });
 
+// FUNCTIONS Chart Control & Download (Sama)
 const zoomRange = document.getElementById('zoomRange');
 const zoomVal = document.getElementById('zoomVal');
 
@@ -454,15 +385,12 @@ document.getElementById('dlPngMlps').addEventListener('click', ()=>{ downloadPng
 const downloadCsv = (type) => {
   if(historyArray.length === 0) return alert('No data');
   
-  let csv = 'tms,iso_time,formatted_time,flow1_pct,flow2_pct,flow1_mlps,flow2_mlps\n';
+  let csv = 'tms,iso,flow1_pct,flow2_pct,flow1_mlps,flow2_mlps\n';
   historyArray.forEach(r=>{
     const ml1 = pctToMlps(r.f1);
     const ml2 = pctToMlps(r.f2);
-    const date = new Date(r.tms);
     csv += r.tms + ','
-        + date.toISOString() + ','
-        // Gunakan format waktu yang sudah diperbaiki untuk CSV juga
-        + formatTime(r.tms) + ',' 
+        + (new Date(r.tms)).toISOString() + ','
         + r.f1 + ','
         + r.f2 + ','
         + ml1.toFixed(3) + ','
