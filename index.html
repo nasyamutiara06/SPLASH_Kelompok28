@@ -146,6 +146,25 @@ const MLPS_MAX = MAX_FLOW_LPM * 1000.0 / 60.0;
 const pctToMlps = (pct) => (pct / 100.0) * MLPS_MAX;
 let lastHistoryData = null; 
 
+// Fungsi untuk memaksa waktu menjadi zona Asia/Jakarta (WIB)
+const formatTimeWIB = (timestamp_ms) => {
+    if (!timestamp_ms) return '--:--:--';
+    const date = new Date(timestamp_ms);
+    const options = {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false, // Menggunakan format 24 jam
+        timeZone: 'Asia/Jakarta' 
+    };
+    try {
+        return date.toLocaleTimeString('id-ID', options);
+    } catch (e) {
+        // Fallback jika browser tidak mendukung 'Asia/Jakarta'
+        return date.toLocaleTimeString(); 
+    }
+};
+
 // Fungsi Helper (Didefinisikan di luar scope module untuk menghindari masalah import jika digabung)
 const mkLine = () => {
     const ctx=document.getElementById('lineChart').getContext('2d');
@@ -200,7 +219,8 @@ const setGauge = (id, v) => {
 
 const appendLog = (s) => {
     const la = document.getElementById('logArea');
-    const now = new Date().toLocaleTimeString(); 
+    // Menggunakan format WIB untuk Log
+    const now = formatTimeWIB(Date.now()); 
     la.innerHTML = '[' + now + '] ' + s + '<br>' + la.innerHTML;
 };
 // END Fungsi Helper
@@ -272,13 +292,11 @@ const appendLog = (s) => {
       const ml2 = pctToMlps(f2).toFixed(1);
       
       const statusText = `F1=${f1}% (${ml1} mL/s) F2=${f2}% (${ml2} mL/s) Pump:${j.pumpState?'ON':'OFF'} Valve:${j.valveState?'OPEN':'CLOSED'} ${leak ? '(LEAK LOCK)' : ''}`;
-      appendLog(statusText);
-      
-      // *** PERBAIKAN WAKTU ***
-      // Menggunakan timestamp dari data realtime ESP32 dan mengonversi ke waktu lokal browser
+      // Logika log dihapus di sini karena sudah ada di appendLog non-module
+
+      // *** PERBAIKAN WAKTU: Last Update ***
       if (j.timestamp) {
-          const serverTime = new Date(j.timestamp).toLocaleTimeString();
-          document.getElementById('lastUpdate').innerText = serverTime;
+          document.getElementById('lastUpdate').innerText = formatTimeWIB(j.timestamp);
       }
   };
 
@@ -304,9 +322,9 @@ const appendLog = (s) => {
           const f1 = p.f1; 
           const f2 = p.f2; 
           
-          // *** PERBAIKAN WAKTU ***
-          // Menggunakan timestamp dari key data history dan mengonversi ke waktu lokal browser
-          labels.push(new Date(tms_ms).toLocaleTimeString());
+          // *** PERBAIKAN WAKTU: Label Grafik ***
+          // Menggunakan timestamp dari key data history dan mengonversi ke WIB
+          labels.push(formatTimeWIB(tms_ms));
           d1.push(f1);
           d2.push(f2);
           m1.push(pctToMlps(f1));
@@ -343,13 +361,14 @@ const appendLog = (s) => {
       const keys = Object.keys(historyData);
       keys.sort((a,b)=>parseInt(a)-parseInt(b));
 
-      let csv = 'timestamp_ms,iso_date,flow1_pct,flow2_pct,pump_state,valve_state,leak_lockout\n';
+      let csv = 'timestamp_ms,iso_date,time_wib,flow1_pct,flow2_pct,pump_state,valve_state,leak_lockout\n';
       keys.forEach(tms_key=>{
         const tms_ms = parseInt(tms_key);
         const r = historyData[tms_key];
         
         csv += tms_ms + ','
           + (new Date(tms_ms)).toISOString() + ','
+          + formatTimeWIB(tms_ms) + ',' // Tambahkan waktu WIB ke CSV
           + r.f1 + ','
           + r.f2 + ','
           + (r.p?'TRUE':'FALSE') + ','
